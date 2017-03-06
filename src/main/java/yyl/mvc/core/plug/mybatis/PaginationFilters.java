@@ -14,16 +14,15 @@ import yyl.mvc.core.util.page.Pagination;
  * @author YaoYiLang
  * @version 2010-10-10
  */
-
 @SuppressWarnings("serial")
 public class PaginationFilters extends PageBounds implements Pagination, Map<String, Object> {
-
+	
 	// =================================Constants=============================================
 	public static final int DEFAULT_LIMIT = 15;
 
 	// =================================Fields=================================================
 	/** 开始查询 的数据索引号 (从0开始) */
-	private int start = 0;
+	private int offset = 0;
 
 	/** 每页条数 */
 	private int limit = DEFAULT_LIMIT;
@@ -40,6 +39,8 @@ public class PaginationFilters extends PageBounds implements Pagination, Map<Str
 
 	public PaginationFilters(int offset, int limit) {
 		super(offset, limit);
+		this.offset = offset;
+		this.limit = limit;
 	}
 
 	// =================================ToolMethods============================================
@@ -54,14 +55,28 @@ public class PaginationFilters extends PageBounds implements Pagination, Map<Str
 	}
 
 	// =================================Methods================================================
+	public void setOffset(int offset) {
+		this.offset = offset;
+	}
+
+	public void setLimit(int limit) {
+		this.limit = limit;
+	}
+
+	public void setFilters(Mapx filters) {
+		this.filters = filters;
+	}
+
+	// =================================OverrideMethods========================================
+	@Deprecated
 	@Override
 	public int getStart() {
-		return start;
+		return offset;
 	}
 
 	@Override
 	public int getOffset() {
-		return super.getOffset();
+		return offset;
 	}
 
 	@Override
@@ -72,10 +87,6 @@ public class PaginationFilters extends PageBounds implements Pagination, Map<Str
 	@Override
 	public Mapx getFilters() {
 		return filters;
-	}
-
-	public void setFilters(Mapx filters) {
-		this.filters = filters;
 	}
 
 	// =================================Overrides==============================================
@@ -145,8 +156,8 @@ public class PaginationFilters extends PageBounds implements Pagination, Map<Str
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((filters == null) ? 0 : filters.hashCode());
+		result = prime * result + offset;
 		result = prime * result + limit;
-		result = prime * result + start;
 		return result;
 	}
 
@@ -160,7 +171,7 @@ public class PaginationFilters extends PageBounds implements Pagination, Map<Str
 		}
 		PaginationFilters other = (PaginationFilters) o;
 		return (filters == other.filters || (filters != null && filters.equals(other.filters))) //
-				&& limit == other.limit //
-				&& start == other.start;
+				&& offset == other.offset//
+				&& limit == other.limit;
 	}
 }
