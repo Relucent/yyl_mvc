@@ -34,6 +34,14 @@ public class SimplePage<T> implements Page<T> {
 
 	/**
 	 * 构造函数
+	 * @param records 当前页数据
+	 */
+	public SimplePage(List<T> records) {
+		this(0, records.size(), records, records.size());
+	}
+
+	/**
+	 * 构造函数
 	 * @param start 记录开始索引号
 	 * @param limit 页面最大记录数
 	 * @param records 当前页数据

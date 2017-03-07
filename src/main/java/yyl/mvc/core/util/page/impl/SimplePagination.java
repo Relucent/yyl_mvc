@@ -30,6 +30,29 @@ public class SimplePagination implements Pagination {
 	public SimplePagination() {
 	}
 
+	/**
+	 * 构造函数
+	 * @param start 查询数据开始索引
+	 * @param limit 查询记录数
+	 */
+
+	public SimplePagination(int start, int limit) {
+		this.start = start;
+		this.limit = limit;
+	}
+
+	/**
+	 * 构造函数
+	 * @param start 查询数据开始索引
+	 * @param limit 查询记录数
+	 * @param filters 查询参数
+	 */
+	public SimplePagination(int start, int limit, Mapx filters) {
+		this.start = start;
+		this.limit = limit;
+		this.filters = filters;
+	}
+
 	// =================================Methods================================================
 
 	public int getStart() {

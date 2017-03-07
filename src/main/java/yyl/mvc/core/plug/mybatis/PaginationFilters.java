@@ -16,7 +16,7 @@ import yyl.mvc.core.util.page.Pagination;
  */
 @SuppressWarnings("serial")
 public class PaginationFilters extends PageBounds implements Pagination, Map<String, Object> {
-	
+
 	// =================================Constants=============================================
 	public static final int DEFAULT_LIMIT = 15;
 
@@ -31,16 +31,32 @@ public class PaginationFilters extends PageBounds implements Pagination, Map<Str
 	private Mapx filters = Mapxs.newMapx();
 
 	// =================================Constructors===========================================
-	/**
-	 * 构造函数
-	 */
+	/** 构造函数 */
 	public PaginationFilters() {
 	}
 
+	/**
+	 * 构造函数
+	 * @param offset 查询数据的偏移量
+	 * @param limit 查询记录数
+	 */
 	public PaginationFilters(int offset, int limit) {
 		super(offset, limit);
 		this.offset = offset;
 		this.limit = limit;
+	}
+
+	/**
+	 * 构造函数
+	 * @param offset 查询数据的偏移量
+	 * @param limit 查询记录数
+	 * @param filters 查询参数
+	 */
+	public PaginationFilters(int offset, int limit, Mapx filters) {
+		super(offset, limit);
+		this.offset = offset;
+		this.limit = limit;
+		this.filters = filters;
 	}
 
 	// =================================ToolMethods============================================
