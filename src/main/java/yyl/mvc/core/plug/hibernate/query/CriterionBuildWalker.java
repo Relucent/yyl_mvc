@@ -10,16 +10,14 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
-import org.springframework.util.Assert;
 
 import yyl.mvc.core.plug.hibernate.support.PropertiesTypeLookupStore;
-import yyl.mvc.core.util.collect.Listx;
+import yyl.mvc.core.plug.hibernate.util.HibernateUtil;
 import yyl.mvc.core.util.collect.Mapx;
 import yyl.mvc.core.util.convert.ConvertUtil;
 
-@Deprecated
 public class CriterionBuildWalker {
-	
+
 	// ==============================Fields===========================================
 	private PropertiesTypeLookupStore lookupStore;
 
@@ -41,110 +39,86 @@ public class CriterionBuildWalker {
 	 */
 	public void addCriterions(Criteria criteria, Mapx filters, Class<?> entityClass) {
 		for (PropertyFilter propertyFilter : buildPropertyFilters(filters, entityClass)) {
+			revisePropertyType(propertyFilter, entityClass, false);
 			addCriterion(criteria, propertyFilter);
 		}
 	}
 
 	public static List<PropertyFilter> buildPropertyFilters(Map<String, Object> filters, Class<?> entityClass) {
-		List<PropertyFilter> filterList = new ArrayList<PropertyFilter>();
+		List<PropertyFilter> result = new ArrayList<PropertyFilter>();
 		for (Map.Entry<String, Object> entry : filters.entrySet()) {
-			filterList.add(buildPropertyFilter(entry));
+
+			PropertyFilter propertyFilter = parsePropertyFilter(entry.getKey(), entry.getValue());
+
+			if (propertyFilter != null) {
+				result.add(propertyFilter);
+			}
 		}
-		return filterList;
+		return result;
 	}
 
-	public static PropertyFilter buildPropertyFilter(Map.Entry<String, Object> entry) {
-		return new PropertyFilter(entry.getKey(), entry.getValue());
+	public static PropertyFilter parsePropertyFilter(String filterName, Object filterValue) {
+		int pos1 = filterName.indexOf(':');
+		String first = pos1 != -1 ? filterName.substring(0, pos1) : StringUtils.EMPTY;
+		String surplus = pos1 != -1 ? filterName.substring(pos1 + 1) : filterName;
+
+		int pos2 = surplus.indexOf('#');
+		String second = pos2 != -1 ? surplus.substring(0, pos2) : surplus;
+		String third = pos2 != -1 ? surplus.substring(pos2 + 1) : StringUtils.EMPTY;
+		MatchType matchType = StringUtils.isEmpty(first) ? MatchType.EQ : ConvertUtil.toEnum(first, MatchType.class, MatchType.EQ);
+		String propertyName = second;
+		Class<?> propertyClass = (StringUtils.isEmpty(third) ? //
+				PropertyType.O : ConvertUtil.toEnum(third, PropertyType.class, PropertyType.O)).value();
+		Object matchValue = filterValue;
+		return new PropertyFilter(propertyName, propertyClass, matchType, matchValue);
 	}
 
 	public void addCriterion(Criteria criteria, PropertyFilter propertyFilter) {
-
-		Criterion criterion = buildCriterion(propertyFilter);
-		if (criterion != null) {
-			addAssociationPath(criteria, propertyFilter.getPropertyName());
-			criteria.add(criterion);
+		String[] paths = propertyFilter.getPropertyPaths();
+		String previousAlias = HibernateUtil.getAlias(criteria);
+		int associationLength = paths.length - 1;
+		for (int i = 0; i < associationLength; i++) {
+			String alias = paths[i];
+			String associationPath = previousAlias + "." + alias;
+			HibernateUtil.addAlias(criteria, associationPath, previousAlias = alias);
 		}
+		buildCriterion(previousAlias + "." + paths[associationLength], propertyFilter.getMatchType(), propertyFilter.getMatchValue());
 	}
 
-	private void addAssociationPath(Criteria criteria, String path) {
-
-		//HibernateUtil.addAlias(criteria, associationPath, alias);
-
+	private boolean revisePropertyType(PropertyFilter propertyFilter, Class<?> entityClass, boolean force) {
+		Class<?> propertyClass = propertyFilter.getPropertyClass();
+		if (force || propertyClass == null || ConvertUtil.isStandardType(propertyClass)) {
+			propertyClass = lookupStore.getPropertyType(entityClass, propertyFilter.getPropertyName());
+			propertyFilter.revisePropertyType(propertyClass);
+		}
+		return propertyFilter.normalizePropertyValue();
 	}
 
 	@SuppressWarnings("rawtypes")
-	private Criterion buildCriterion(PropertyFilter propertyFilter) {
-		Assert.notNull(propertyFilter, "propertyFilter cannot be null");
-		String propertyName = propertyFilter.getPropertyName();
-		Class<?> propertyClass = propertyFilter.getPropertyClass();
-		MatchType matchType = propertyFilter.getMatchType();
-		Object matchValue = propertyFilter.getMatchValue();
-
-		if (!ConvertUtil.isStandardType(propertyClass)) {
-			return null;
-		}
-
-		if (MatchType.IN.equals(matchType)) {
-			matchValue = convertToCollection(matchValue, propertyClass);
-		} else if (MatchType.LIKE.equals(matchType)) {
-			if (!(matchValue instanceof String)) {
-				matchType = MatchType.UNKNOWN;
-			}
-		} else {
-			matchValue = ConvertUtil.convert(matchValue, propertyClass);
-		}
-
-		Criterion criterion = null;
+	private Criterion buildCriterion(String propertyName, MatchType matchType, Object matchValue) {
 		switch (matchType) {
 		case EQ:
-			criterion = Restrictions.eq(propertyName, matchValue);
-			break;
+			return Restrictions.eq(propertyName, matchValue);
 		case NOT:
-			criterion = Restrictions.ne(propertyName, matchValue);
-			break;
+			return Restrictions.ne(propertyName, matchValue);
 		case LIKE:
-			criterion = Restrictions.like(propertyName, matchValue.toString(), MatchMode.ANYWHERE);
-			break;
+			return Restrictions.like(propertyName, matchValue.toString(), MatchMode.ANYWHERE);
 		case LE:
-			criterion = Restrictions.le(propertyName, matchValue);
-			break;
+			return Restrictions.le(propertyName, matchValue);
 		case LT:
-			criterion = Restrictions.lt(propertyName, matchValue);
-			break;
+			return Restrictions.lt(propertyName, matchValue);
 		case GE:
-			criterion = Restrictions.ge(propertyName, matchValue);
-			break;
+			return Restrictions.ge(propertyName, matchValue);
 		case GT:
-			criterion = Restrictions.gt(propertyName, matchValue);
-			break;
+			return Restrictions.gt(propertyName, matchValue);
 		case IN:
-			criterion = Restrictions.in(propertyName, (Collection) matchValue);
-			break;
+			return Restrictions.in(propertyName, (Collection) matchValue);
 		case INL:
-			criterion = Restrictions.isNull(propertyName);
-			break;
+			return Restrictions.isNull(propertyName);
 		case NNL:
-			criterion = Restrictions.isNotNull(propertyName);
-			break;
+			return Restrictions.isNotNull(propertyName);
 		default:
-			criterion = Restrictions.eq(propertyName, matchValue);
-			break;
+			return Restrictions.eq(propertyName, matchValue);
 		}
-		return criterion;
-	}
-
-	private <T> Collection<T> convertToCollection(Object value, Class<T> type) {
-		List<T> list = new ArrayList<T>();
-		if (value instanceof String) {
-			for (String item : StringUtils.split(value.toString(), ',')) {
-				list.add((T) ConvertUtil.convert(item, type));
-			}
-		} else {
-			Listx listx = ConvertUtil.toList(value);
-			for (int i = 0, I = listx.size(); i < I; i++) {
-				list.add(ConvertUtil.convert(listx.get(i), type));
-			}
-		}
-		return list;
 	}
 }

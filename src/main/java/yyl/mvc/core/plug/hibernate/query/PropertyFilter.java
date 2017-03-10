@@ -1,7 +1,13 @@
 package yyl.mvc.core.plug.hibernate.query;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.Assert;
+
+import yyl.mvc.core.util.collect.Listx;
 import yyl.mvc.core.util.convert.ConvertUtil;
 
 /**
@@ -14,7 +20,7 @@ public class PropertyFilter {
 	private String propertyName;
 
 	/** property class. */
-	protected Class<?> propertyClass;
+	private Class<?> propertyClass;
 
 	/** match type. */
 	private MatchType matchType;
@@ -22,13 +28,45 @@ public class PropertyFilter {
 	/** match value. */
 	private Object matchValue;
 
+	/** original match value. */
+	private Object originalMatchValue;
+
+	/** property path. */
+	private String[] propertyPaths;
+
+	/** property class and value correct */
+	private transient boolean normalized = false;
+
 	/**
 	 * constructor.
-	 * @param filterName
-	 * @param matchValue
+	 * @param propertyName 属性名
+	 * @param matchType 匹配类型
+	 * @param matchValue 匹配值
 	 */
-	public PropertyFilter(final String filterName, final Object matchValue) {
+	public PropertyFilter(String propertyName, MatchType matchType, Object matchValue) {
+		this(propertyName, matchValue != null ? matchValue.getClass() : null, matchType, matchValue);
+	}
 
+	/**
+	 * constructor.
+	 * @param propertyName 属性名
+	 * @param propertyClass 属性类型
+	 * @param matchType 匹配类型
+	 * @param matchValue 匹配值
+	 */
+	public PropertyFilter(String propertyName, Class<?> propertyClass, MatchType matchType, Object matchValue) {
+		this.propertyName = propertyName;
+		this.propertyClass = propertyClass;
+		this.matchType = matchType;
+		this.originalMatchValue = matchValue;
+		this.matchValue = this.originalMatchValue;
+		this.propertyPaths = StringUtils.split(this.propertyName, '.');
+	}
+
+	/**
+	 * constructor.
+	 */
+	protected static PropertyFilter parse(final String filterName, final String filterValue) {
 		int pos1 = filterName.indexOf(':');
 		String first = pos1 != -1 ? filterName.substring(0, pos1) : StringUtils.EMPTY;
 		String surplus = pos1 != -1 ? filterName.substring(pos1 + 1) : filterName;
@@ -36,11 +74,52 @@ public class PropertyFilter {
 		int pos2 = surplus.indexOf('#');
 		String second = pos2 != -1 ? surplus.substring(0, pos2) : surplus;
 		String third = pos2 != -1 ? surplus.substring(pos2 + 1) : StringUtils.EMPTY;
+		MatchType matchType = StringUtils.isEmpty(first) ? MatchType.EQ : ConvertUtil.toEnum(first, MatchType.class, MatchType.EQ);
+		String propertyName = second;
+		Class<?> propertyClass = (StringUtils.isEmpty(third) ? //
+				PropertyType.O : ConvertUtil.toEnum(third, PropertyType.class, PropertyType.O)).value();
+		Object matchValue = filterValue;
+		return new PropertyFilter(propertyName, propertyClass, matchType, matchValue);
+	}
 
-		this.matchType = StringUtils.isEmpty(first) ? MatchType.EQ : ConvertUtil.toEnum(first, MatchType.class, MatchType.EQ);
-		this.propertyName = second;
-		this.propertyClass = (StringUtils.isEmpty(third) ? PropertyType.O : ConvertUtil.toEnum(third, PropertyType.class, PropertyType.O)).value();
-		this.matchValue = matchValue;
+	protected void revisePropertyType(Class<?> propertyClass) {
+		this.propertyClass = propertyClass;
+	}
+
+	protected boolean normalizePropertyValue() {
+
+		Assert.notNull(propertyClass, "propertyClass cannot be null");
+
+		if (!ConvertUtil.isStandardType(propertyClass)) {
+			return false;
+		}
+
+		if (MatchType.IN.equals(matchType)) {
+			matchValue = convertToCollection(originalMatchValue, propertyClass);
+		} else if (MatchType.LIKE.equals(matchType)) {
+			if (!(matchValue instanceof String)) {
+				matchType = MatchType.UNKNOWN;
+			}
+		} else {
+			matchValue = ConvertUtil.convert(originalMatchValue, propertyClass);
+		}
+
+		return true;
+	}
+
+	private static <T> Collection<T> convertToCollection(Object value, Class<T> type) {
+		List<T> list = new ArrayList<T>();
+		if (value instanceof String) {
+			for (String item : StringUtils.split(value.toString(), ',')) {
+				list.add((T) ConvertUtil.convert(item, type));
+			}
+		} else {
+			Listx listx = ConvertUtil.toList(value);
+			for (int i = 0, I = listx.size(); i < I; i++) {
+				list.add(ConvertUtil.convert(listx.get(i), type));
+			}
+		}
+		return list;
 	}
 
 	public String getPropertyName() {
@@ -57,6 +136,18 @@ public class PropertyFilter {
 
 	public Class<?> getPropertyClass() {
 		return propertyClass;
+	}
+
+	public String[] getPropertyPaths() {
+		return propertyPaths;
+	}
+
+	public boolean isComplexProperty() {
+		return propertyPaths.length > 1;
+	}
+
+	public boolean isReviseNormalized() {
+		return normalized;
 	}
 
 	@Override

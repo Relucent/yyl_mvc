@@ -15,7 +15,7 @@ public class EnumConverter implements Converter<Enum> {
 	@Override
 	public Enum convert(Object source, Class<? extends Enum> toType, Enum vDefault) {
 		try {
-			if (toType.isEnum()) {
+			if (source != null && toType.isEnum()) {
 				if (toType.isInstance(source)) {
 					return (Enum) source;
 				}

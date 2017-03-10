@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
+import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.internal.CriteriaImpl;
 import org.hibernate.internal.CriteriaImpl.Subcriteria;
@@ -30,6 +31,15 @@ public class HibernateUtil {
 	}
 
 	// ==============================Methods==========================================
+	/**
+	 * 获得根节点别名
+	 * @param criteria Criteria
+	 * @return Criteria root alias
+	 */
+	public static String getAlias(Criteria criteria) {
+		return criteria instanceof CriteriaImpl ? ((CriteriaImpl) criteria).getAlias() : CriteriaSpecification.ROOT_ALIAS;
+	}
+
 	/**
 	 * 增加关联(建立LEFT_OUTER_JOIN关联)
 	 * @param criteria Criteria类
