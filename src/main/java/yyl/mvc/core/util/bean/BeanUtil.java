@@ -3,14 +3,11 @@ package yyl.mvc.core.util.bean;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.Assert;
-import org.springframework.util.ReflectionUtils;
 
 /**
  * BEAN操作工具类.提供一些Apache_Commons_BeanUtils反射方面缺失的封装。
@@ -30,8 +27,8 @@ public class BeanUtil {
 	 * @throws NoSuchFieldException
 	 */
 	public static void setDeclaredProperty(Object object, String propertyName, Object newValue) throws IllegalAccessException, NoSuchFieldException {
-		Assert.notNull(object);
-		Assert.hasText(propertyName);
+		notNull(object, "object required");
+		hasText(propertyName, "propertyName required");
 		Field field = object.getClass().getDeclaredField(propertyName);
 		setDeclaredProperty(object, field, newValue);
 	}
@@ -45,8 +42,8 @@ public class BeanUtil {
 	 * @throws NoSuchFieldException
 	 */
 	public static Object getDeclaredProperty(Object object, String propertyName) throws IllegalAccessException, NoSuchFieldException {
-		Assert.notNull(object);
-		Assert.hasText(propertyName);
+		notNull(object, "object required");
+		hasText(propertyName, "propertyName required");
 		Field field = object.getClass().getDeclaredField(propertyName);
 		return getDeclaredProperty(object, field);
 	}
@@ -73,8 +70,8 @@ public class BeanUtil {
 	 * @throws IllegalAccessException
 	 */
 	public static Object getDeclaredProperty(Object object, Field field) throws IllegalAccessException {
-		Assert.notNull(object);
-		Assert.notNull(field);
+		notNull(object, "object required");
+		notNull(field, "field required");
 		boolean accessible = field.isAccessible();
 		field.setAccessible(true);
 		Object result = field.get(object);
@@ -89,12 +86,12 @@ public class BeanUtil {
 	 * @return 取值方法名。
 	 */
 	public static String getAccessorName(Class<?> type, String fieldName) {
-		Assert.hasText(fieldName, "FieldName required");
-		Assert.notNull(type, "Type required");
+		hasText(fieldName, "FieldName required");
+		notNull(type, "Type required");
 		if (type.getName().equals("boolean")) {
-			return "is" + StringUtils.capitalize(fieldName);
+			return "is" + capitalize(fieldName);
 		} else {
-			return "get" + StringUtils.capitalize(fieldName);
+			return "get" + capitalize(fieldName);
 		}
 	}
 
@@ -134,10 +131,10 @@ public class BeanUtil {
 	 * @return 返回对应的Field
 	 * @throws NoSuchFieldException 如果没有该Field时抛出
 	 */
-	public static Field getDeclaredField(Object object, String propertyName) throws NoSuchFieldException {
-		Assert.notNull(object);
-		Assert.hasText(propertyName);
-		return getDeclaredField(object.getClass(), propertyName);
+	public static Field forceGetDeclaredField(Object object, String propertyName) throws NoSuchFieldException {
+		notNull(object, "object required");
+		hasText(propertyName, "propertyName required");
+		return forceGetDeclaredField(object.getClass(), propertyName);
 	}
 
 	/**
@@ -147,9 +144,9 @@ public class BeanUtil {
 	 * @return 返回对应的Field
 	 * @throws NoSuchFieldException 如果没有该Field时抛出.
 	 */
-	public static Field getDeclaredField(Class<?> clazz, String propertyName) throws NoSuchFieldException {
-		Assert.notNull(clazz);
-		Assert.hasText(propertyName);
+	public static Field forceGetDeclaredField(Class<?> clazz, String propertyName) throws NoSuchFieldException {
+		notNull(clazz, "clazz required");
+		hasText(propertyName, "propertyName required");
 		for (Class<?> superClass = clazz; superClass != Object.class; superClass = superClass.getSuperclass()) {
 			try {
 				return superClass.getDeclaredField(propertyName);
@@ -168,9 +165,9 @@ public class BeanUtil {
 	 * @throws NoSuchFieldException 如果没有该Field时抛出.
 	 */
 	public static Object forceGetProperty(final Object object, final String propertyName) throws NoSuchFieldException {
-		Assert.notNull(object);
-		Assert.hasText(propertyName);
-		final Field field = getDeclaredField(object, propertyName);
+		notNull(object, "object required");
+		hasText(propertyName, "propertyName required");
+		final Field field = forceGetDeclaredField(object, propertyName);
 		return AccessController.doPrivileged(new PrivilegedAction() {
 			/** * run. */
 			public Object run() {
@@ -196,9 +193,9 @@ public class BeanUtil {
 	 * @throws NoSuchFieldException 如果没有该Field时抛出.
 	 */
 	public static void forceSetProperty(final Object object, final String propertyName, final Object newValue) throws NoSuchFieldException {
-		Assert.notNull(object);
-		Assert.hasText(propertyName);
-		final Field field = getDeclaredField(object, propertyName);
+		notNull(object, "object required");
+		hasText(propertyName, "propertyName required");
+		final Field field = forceGetDeclaredField(object, propertyName);
 		AccessController.doPrivileged(new PrivilegedAction() {
 			/** * run. */
 			public Object run() {
@@ -224,8 +221,8 @@ public class BeanUtil {
 	 * @throws NoSuchMethodException 如果没有该Method时抛出.
 	 */
 	public static Object invokePrivateMethod(final Object object, final String methodName, final Object... params) throws NoSuchMethodException {
-		Assert.notNull(object);
-		Assert.hasText(methodName);
+		notNull(object, "object required");
+		hasText(methodName, "methodName required");
 		Class[] types = new Class[params.length];
 		for (int i = 0; i < params.length; i++) {
 			types[i] = params[i].getClass();
@@ -253,7 +250,7 @@ public class BeanUtil {
 				try {
 					result = m.invoke(object, params);
 				} catch (Exception e) {
-					ReflectionUtils.handleReflectionException(e);
+					handleReflectionException(e);
 				}
 				m.setAccessible(accessible);
 				return result;
@@ -288,7 +285,7 @@ public class BeanUtil {
 	 * @throws NoSuchFieldException 指定属性不存在时，抛出异常
 	 */
 	public static Class<?> getPropertyType(Class<?> type, String name) throws NoSuchFieldException {
-		return getDeclaredField(type, name).getType();
+		return forceGetDeclaredField(type, name).getType();
 	}
 
 	/**
@@ -299,15 +296,15 @@ public class BeanUtil {
 	 * @throws NoSuchFieldException field不存在时抛出异常
 	 */
 	public static String getGetterName(Class<?> type, String fieldName) throws NoSuchFieldException {
-		Assert.notNull(type, "Type required");
-		Assert.hasText(fieldName, "FieldName required");
+		notNull(type, "Type required");
+		hasText(fieldName, "FieldName required");
 
-		Class<?> fieldType = getDeclaredField(type, fieldName).getType();
+		Class<?> fieldType = forceGetDeclaredField(type, fieldName).getType();
 
 		if ((fieldType == boolean.class) || (fieldType == Boolean.class)) {
-			return "is" + StringUtils.capitalize(fieldName);
+			return "is" + capitalize(fieldName);
 		} else {
-			return "get" + StringUtils.capitalize(fieldName);
+			return "get" + capitalize(fieldName);
 		}
 	}
 
@@ -326,6 +323,42 @@ public class BeanUtil {
 			/* Ignore the error */
 		}
 		return null;
+	}
+
+	public static void notNull(Object object, String message) {
+		if (object == null) {
+			throw new IllegalArgumentException(message);
+		}
+	}
+
+	private static void hasText(String text, String message) {
+		if (text != null) {
+			throw new IllegalArgumentException(message);
+		}
+	}
+
+	private static String capitalize(String str) {
+		int strLen;
+		if ((str == null) || ((strLen = str.length()) == 0))
+			return str;
+		char firstChar = str.charAt(0);
+		if (Character.isTitleCase(firstChar)) {
+			return str;
+		}
+		return new StringBuilder(strLen).append(Character.toTitleCase(firstChar)).append(str.substring(1)).toString();
+	}
+
+	private static void handleReflectionException(Exception ex) {
+		if (ex instanceof NoSuchMethodException) {
+			throw new IllegalStateException("Method not found: " + ex.getMessage());
+		}
+		if (ex instanceof IllegalAccessException) {
+			throw new IllegalStateException("Could not access method: " + ex.getMessage());
+		}
+		if (ex instanceof RuntimeException) {
+			throw ((RuntimeException) ex);
+		}
+		throw new UndeclaredThrowableException(ex);
 	}
 
 	// 工具类私有构造

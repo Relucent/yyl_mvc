@@ -670,7 +670,7 @@ public class HibernateGenericDao extends HibernateDaoSupport {
 	 * @param entityClass 实体类型
 	 * @return 主键名称
 	 */
-	public String getIdName(Class<?> entityClass) {
+	protected String getIdName(Class<?> entityClass) {
 		Assert.notNull(entityClass);
 		ClassMetadata meta = getClassMetadata(entityClass);
 		Assert.notNull(meta, "Class " + entityClass + " not define in hibernate session factory.");

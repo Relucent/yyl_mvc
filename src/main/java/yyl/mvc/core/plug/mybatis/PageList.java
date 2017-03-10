@@ -10,6 +10,8 @@ import yyl.mvc.core.util.page.Page;
 
 /**
  * 分页查询的结果数据.<br>
+ * @author YaoYiLang
+ * @version 2015-03-07
  */
 @SuppressWarnings("serial")
 public class PageList<T> implements Page<T>, List<T> {

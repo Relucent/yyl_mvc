@@ -12,7 +12,7 @@ import yyl.mvc.core.util.page.Pagination;
 /**
  * 分页查询条件参数 包含分页查询的页数，每页最大记录，查询条件，排序条件等信息
  * @author YaoYiLang
- * @version 2010-10-10
+ * @version 2015-03-07
  */
 @SuppressWarnings("serial")
 public class PaginationFilters extends PageBounds implements Pagination, Map<String, Object> {
@@ -22,7 +22,7 @@ public class PaginationFilters extends PageBounds implements Pagination, Map<Str
 
 	// =================================Fields=================================================
 	/** 开始查询 的数据索引号 (从0开始) */
-	private int offset = 0;
+	private int start = 0;
 
 	/** 每页条数 */
 	private int limit = DEFAULT_LIMIT;
@@ -37,24 +37,24 @@ public class PaginationFilters extends PageBounds implements Pagination, Map<Str
 
 	/**
 	 * 构造函数
-	 * @param offset 查询数据的偏移量
+	 * @param start 查询数据的偏移量
 	 * @param limit 查询记录数
 	 */
-	public PaginationFilters(int offset, int limit) {
-		super(offset, limit);
-		this.offset = offset;
+	public PaginationFilters(int start, int limit) {
+		super(start, limit);
+		this.start = start;
 		this.limit = limit;
 	}
 
 	/**
 	 * 构造函数
-	 * @param offset 查询数据的偏移量
+	 * @param start 查询数据的偏移量
 	 * @param limit 查询记录数
 	 * @param filters 查询参数
 	 */
-	public PaginationFilters(int offset, int limit, Mapx filters) {
-		super(offset, limit);
-		this.offset = offset;
+	public PaginationFilters(int start, int limit, Mapx filters) {
+		super(start, limit);
+		this.start = start;
 		this.limit = limit;
 		this.filters = filters;
 	}
@@ -67,12 +67,12 @@ public class PaginationFilters extends PageBounds implements Pagination, Map<Str
 	 */
 	@Override
 	public <T> PageList<T> wrap(List<T> records) {
-		return new PageList<T>(getOffset(), getLimit(), records, getTotalCount());
+		return new PageList<T>(getStart(), getLimit(), records, getTotalCount());
 	}
 
 	// =================================Methods================================================
-	public void setOffset(int offset) {
-		this.offset = offset;
+	public void setStart(int start) {
+		this.start = start;
 	}
 
 	public void setLimit(int limit) {
@@ -84,15 +84,9 @@ public class PaginationFilters extends PageBounds implements Pagination, Map<Str
 	}
 
 	// =================================OverrideMethods========================================
-	@Deprecated
 	@Override
 	public int getStart() {
-		return offset;
-	}
-
-	@Override
-	public int getOffset() {
-		return offset;
+		return start;
 	}
 
 	@Override
@@ -103,6 +97,12 @@ public class PaginationFilters extends PageBounds implements Pagination, Map<Str
 	@Override
 	public Mapx getFilters() {
 		return filters;
+	}
+
+	@Deprecated
+	@Override
+	public int getOffset() {
+		return start;
 	}
 
 	// =================================Overrides==============================================
@@ -172,7 +172,7 @@ public class PaginationFilters extends PageBounds implements Pagination, Map<Str
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((filters == null) ? 0 : filters.hashCode());
-		result = prime * result + offset;
+		result = prime * result + start;
 		result = prime * result + limit;
 		return result;
 	}
@@ -187,7 +187,7 @@ public class PaginationFilters extends PageBounds implements Pagination, Map<Str
 		}
 		PaginationFilters other = (PaginationFilters) o;
 		return (filters == other.filters || (filters != null && filters.equals(other.filters))) //
-				&& offset == other.offset//
+				&& start == other.start//
 				&& limit == other.limit;
 	}
 }
