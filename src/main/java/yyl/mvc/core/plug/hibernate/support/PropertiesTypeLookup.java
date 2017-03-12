@@ -97,7 +97,7 @@ public class PropertiesTypeLookup<T> {
 		}
 
 		public boolean hasNext() {
-			return (this.children != null);
+			return this.children != null;
 		}
 	}
 

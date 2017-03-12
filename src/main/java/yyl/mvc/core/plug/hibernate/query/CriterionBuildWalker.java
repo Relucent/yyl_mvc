@@ -89,9 +89,9 @@ public class CriterionBuildWalker {
 		Class<?> propertyClass = propertyFilter.getPropertyClass();
 		if (force || propertyClass == null || ConvertUtil.isStandardType(propertyClass)) {
 			propertyClass = lookupStore.getPropertyType(entityClass, propertyFilter.getPropertyName());
-			propertyFilter.revisePropertyType(propertyClass);
+			propertyFilter.setPropertyType(propertyClass);
 		}
-		return propertyFilter.normalizePropertyValue();
+		return propertyFilter.revisePropertyValue();
 	}
 
 	@SuppressWarnings("rawtypes")

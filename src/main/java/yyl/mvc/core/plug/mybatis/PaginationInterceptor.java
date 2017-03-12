@@ -4,12 +4,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.cache.CacheKey;
+import org.apache.ibatis.executor.BaseExecutor;
 import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.executor.ExecutorException;
 import org.apache.ibatis.executor.resultset.ResultSetHandler;
@@ -32,6 +33,7 @@ import org.apache.ibatis.reflection.wrapper.DefaultObjectWrapperFactory;
 import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
 import org.apache.ibatis.scripting.xmltags.ForEachSqlNode;
 import org.apache.ibatis.session.Configuration;
+import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
@@ -40,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import yyl.mvc.core.plug.jdbc.dialect.Dialect;
 import yyl.mvc.core.plug.jdbc.dialect.DialectConfigurer;
+import yyl.mvc.core.util.page.Pagination;
 
 /**
  * 用于MyBatis的分页查询插件.<br>
@@ -47,9 +50,10 @@ import yyl.mvc.core.plug.jdbc.dialect.DialectConfigurer;
  * @see org.apache.ibatis.plugin.Interceptor
  * @author _yyl
  */
-@Intercepts({ //
+@Intercepts({
+		@Signature(type = BaseExecutor.class, method = "query", args = { MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class,
+				CacheKey.class, BoundSql.class }), //
 		@Signature(type = StatementHandler.class, method = "prepare", args = { Connection.class }), //
-		@Signature(type = ResultSetHandler.class, method = "handleResultSets", args = { Statement.class }) //
 })
 public class PaginationInterceptor implements Interceptor {
 
@@ -57,6 +61,7 @@ public class PaginationInterceptor implements Interceptor {
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 	private static final ObjectFactory DEFAULT_OBJECT_FACTORY = new DefaultObjectFactory();
 	private static final ObjectWrapperFactory DEFAULT_OBJECT_WRAPPER_FACTORY = new DefaultObjectWrapperFactory();
+	private static ThreadLocal<Object> PAGINATION_SIGN = new ThreadLocal<>();
 
 	// ==============================Methods==========================================
 	/**
@@ -69,12 +74,12 @@ public class PaginationInterceptor implements Interceptor {
 
 		Object target = ivk.getTarget();
 
-		if (target instanceof RoutingStatementHandler) {
-			return interceptStatementHandler(ivk);
+		if (target instanceof BaseExecutor) {
+			return interceptBaseExecutor(ivk);
 		}
 
-		if (target instanceof ResultSetHandler) {
-			return interceptResultSetHandler(ivk);
+		if (target instanceof RoutingStatementHandler) {
+			return interceptStatementHandler(ivk);
 		}
 
 		return ivk.proceed();
@@ -88,12 +93,12 @@ public class PaginationInterceptor implements Interceptor {
 	@Override
 	public Object plugin(Object target) {
 		// 当目标类是StatementHandler类型时，才包装目标类，否者直接返回目标本身,减少目标被代理的次数
-		return (target instanceof StatementHandler || target instanceof ResultSetHandler) ? Plugin.wrap(target, this) : target;
+		return (target instanceof BaseExecutor || target instanceof StatementHandler || target instanceof ResultSetHandler)
+				? Plugin.wrap(target, this) : target;
 	}
 
 	/**
 	 * 获得配置的参数
-	 * 
 	 * @param properties 配置的参数
 	 */
 	@Override
@@ -101,66 +106,67 @@ public class PaginationInterceptor implements Interceptor {
 	}
 
 	// ==============================ProcessMethods===================================
-	protected Object interceptStatementHandler(Invocation ivk) throws Throwable {
-		RoutingStatementHandler statementHandler = (RoutingStatementHandler) ivk.getTarget();
-		MetaObject meta = MetaObject.forObject(statementHandler, DEFAULT_OBJECT_FACTORY, DEFAULT_OBJECT_WRAPPER_FACTORY);
-		RowBounds rowBounds = (RowBounds) meta.getValue("delegate.rowBounds");
+	@SuppressWarnings("rawtypes")
+	protected Object interceptBaseExecutor(Invocation ivk) throws Throwable {
 
-		//BaseStatementHandler delegate =  (BaseStatementHandler)meta.getValue("delegate");;
+		Object[] args = ivk.getArgs();//-> {MappedStatement,Object,RowBounds,ResultHandler,CacheKey,BoundSql}
+		Object parameter = args[1];
 
-		meta = getTargetMetaObject(meta);
-
-		MappedStatement ms = (MappedStatement) meta.getValue("delegate.mappedStatement");
-
-		BoundSql boundSql = statementHandler.getBoundSql();
-		String sql = StringUtils.trimToEmpty(boundSql.getSql());
-		int offset = rowBounds.getOffset();
-		int limit = rowBounds.getLimit();
-		Dialect dialect = DialectConfigurer.getDialect();
-		if (rowBounds instanceof PageBounds) {
-			PageBounds pageBounds = (PageBounds) rowBounds;
-			pageBounds.totalCount = obtainTotalCount((Connection) ivk.getArgs()[0], ms, boundSql, dialect);
-			meta.setValue("delegate.resultSetHandler.rowBounds", new OriginalRowBoundsWrapper(pageBounds));
-			meta.setValue("delegate.boundSql.sql", sql = dialect.getLimitSql(sql, offset, limit));
-		} else if (rowBounds != RowBounds.DEFAULT && (offset != RowBounds.NO_ROW_OFFSET || limit != RowBounds.NO_ROW_LIMIT)) {
-			meta.setValue("delegate.resultSetHandler.rowBounds", new OriginalRowBoundsWrapper(rowBounds));
-			meta.setValue("delegate.boundSql.sql", sql = dialect.getLimitSql(sql, offset, limit));
+		RowBounds rowBounds = (RowBounds) args[2];
+		//判断是否分页查询
+		if (parameter instanceof Pagination) {
+			Pagination pagination = (Pagination) parameter;
+			args[1] = pagination.getFilters();
+			args[2] = rowBounds = new PageBounds(pagination.getStart(), pagination.getLimit());
 		}
-		if (logger.isDebugEnabled()) {
-			logger.debug("execute:" + ms.getId() + "\n" + sql);
+
+		if (rowBounds != RowBounds.DEFAULT && (rowBounds.getOffset() != RowBounds.NO_ROW_OFFSET || rowBounds.getLimit() != RowBounds.NO_ROW_LIMIT)) {
+			PAGINATION_SIGN.set(Boolean.TRUE);
 		}
-		return ivk.proceed();
+
+		List<?> records = (List) ivk.getMethod().invoke(ivk.getTarget(), args);
+
+		return rowBounds instanceof PageBounds
+				? new PageList<>(rowBounds.getOffset(), rowBounds.getLimit(), records, ((PageBounds) rowBounds).getTotalCount()) : records;
 	}
 
-	protected Object interceptResultSetHandler(Invocation ivk) throws Throwable {
+	protected Object interceptStatementHandler(Invocation ivk) throws Throwable {
 
-		ResultSetHandler handler = (ResultSetHandler) ivk.getTarget();//#DefaultResultSetHandler
+		if (PAGINATION_SIGN.get() != null) {
+			//分页查询
+			RoutingStatementHandler statementHandler = (RoutingStatementHandler) ivk.getTarget();
+			MetaObject meta = MetaObject.forObject(statementHandler, DEFAULT_OBJECT_FACTORY, DEFAULT_OBJECT_WRAPPER_FACTORY);
+			RowBounds rowBounds = (RowBounds) meta.getValue("delegate.rowBounds");
 
-		MetaObject meta = MetaObject.forObject(handler, DEFAULT_OBJECT_FACTORY, DEFAULT_OBJECT_WRAPPER_FACTORY);
+			//BaseStatementHandler delegate =  (BaseStatementHandler)meta.getValue("delegate");
+			//delegate.resultSetHandler -> ResultSetHandler
+			//delegate.arameterHandler -> ParameterHandler
 
-		RowBounds rowBounds = (RowBounds) meta.getValue("rowBounds");
+			meta = getTargetMetaObject(meta);
 
-		List<?> records = (List<?>) ivk.proceed();
+			MappedStatement ms = (MappedStatement) meta.getValue("delegate.mappedStatement");
 
-		if (rowBounds instanceof OriginalRowBoundsWrapper) {
-			OriginalRowBoundsWrapper wrapper = (OriginalRowBoundsWrapper) rowBounds;
-			if (wrapper.original instanceof PaginationFilters) {
-				records = ((PaginationFilters) rowBounds).wrap(records);
+			BoundSql boundSql = statementHandler.getBoundSql();
+			String sql = StringUtils.trimToEmpty(boundSql.getSql());
+			int offset = rowBounds.getOffset();
+			int limit = rowBounds.getLimit();
+			Dialect dialect = DialectConfigurer.getDialect();
+
+			if (rowBounds instanceof PageBounds) {
+				PageBounds pageBounds = (PageBounds) rowBounds;
+				pageBounds.totalCount = obtainTotalCount((Connection) ivk.getArgs()[0], ms, boundSql, dialect);
+				meta.setValue("delegate.resultSetHandler.rowBounds", RowBounds.DEFAULT);
+				meta.setValue("delegate.boundSql.sql", sql = dialect.getLimitSql(sql, offset, limit));
+			} else if (rowBounds != RowBounds.DEFAULT && (offset != RowBounds.NO_ROW_OFFSET || limit != RowBounds.NO_ROW_LIMIT)) {
+				meta.setValue("delegate.resultSetHandler.rowBounds", RowBounds.DEFAULT);
+				meta.setValue("delegate.boundSql.sql", sql = dialect.getLimitSql(sql, offset, limit));
+			}
+			if (logger.isDebugEnabled()) {
+				logger.debug("execute:" + ms.getId() + "\n" + sql);
 			}
 		}
 
-		return records;
-	}
-
-	// ==============================InnerClass=======================================
-	class OriginalRowBoundsWrapper extends RowBounds {
-
-		final RowBounds original;
-
-		OriginalRowBoundsWrapper(RowBounds rowBounds) {
-			super();
-			this.original = rowBounds;
-		}
+		return ivk.proceed();
 	}
 
 	// ==============================ToolMethods======================================
@@ -198,38 +204,42 @@ public class PaginationInterceptor implements Interceptor {
 			ps = conn.prepareStatement(countSql);
 			BoundSql countBoundSql = new BoundSql(ms.getConfiguration(), countSql, boundSql.getParameterMappings(), boundSql.getParameterObject());
 			ErrorContext.instance().activity("setting parameters").object(ms.getParameterMap().getId());
-			List<ParameterMapping> parameterMappings = countBoundSql.getParameterMappings();
-			Object parameter = countBoundSql.getParameterObject();
-			if (parameterMappings != null) {
-				Configuration configuration = ms.getConfiguration();
-				TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();
-				MetaObject metaObject = parameter == null ? null : configuration.newMetaObject(parameter);
-				for (int i = 0; i < parameterMappings.size(); i++) {
-					ParameterMapping parameterMapping = parameterMappings.get(i);
-					if (parameterMapping.getMode() != ParameterMode.OUT) {
-						Object value;
-						String propertyName = parameterMapping.getProperty();
-						PropertyTokenizer prop = new PropertyTokenizer(propertyName);
-						if (parameter == null) {
-							value = null;
-						} else if (typeHandlerRegistry.hasTypeHandler(parameter.getClass())) {
-							value = parameter;
-						} else if (countBoundSql.hasAdditionalParameter(propertyName)) {
-							value = countBoundSql.getAdditionalParameter(propertyName);
-						} else if (propertyName.startsWith(ForEachSqlNode.ITEM_PREFIX) && countBoundSql.hasAdditionalParameter(prop.getName())) {
-							value = countBoundSql.getAdditionalParameter(prop.getName());
-							if (value != null) {
-								value = configuration.newMetaObject(value).getValue(propertyName.substring(prop.getName().length()));
+
+			//DefaultParameterHandler.setParameters
+			{
+				List<ParameterMapping> parameterMappings = countBoundSql.getParameterMappings();
+				Object parameter = countBoundSql.getParameterObject();
+				if (parameterMappings != null) {
+					Configuration configuration = ms.getConfiguration();
+					TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();
+					MetaObject metaObject = parameter == null ? null : configuration.newMetaObject(parameter);
+					for (int i = 0; i < parameterMappings.size(); i++) {
+						ParameterMapping parameterMapping = parameterMappings.get(i);
+						if (parameterMapping.getMode() != ParameterMode.OUT) {
+							Object value;
+							String propertyName = parameterMapping.getProperty();
+							PropertyTokenizer prop = new PropertyTokenizer(propertyName);
+							if (parameter == null) {
+								value = null;
+							} else if (typeHandlerRegistry.hasTypeHandler(parameter.getClass())) {
+								value = parameter;
+							} else if (countBoundSql.hasAdditionalParameter(propertyName)) {
+								value = countBoundSql.getAdditionalParameter(propertyName);
+							} else if (propertyName.startsWith(ForEachSqlNode.ITEM_PREFIX) && countBoundSql.hasAdditionalParameter(prop.getName())) {
+								value = countBoundSql.getAdditionalParameter(prop.getName());
+								if (value != null) {
+									value = configuration.newMetaObject(value).getValue(propertyName.substring(prop.getName().length()));
+								}
+							} else {
+								value = metaObject == null ? null : metaObject.getValue(propertyName);
 							}
-						} else {
-							value = metaObject == null ? null : metaObject.getValue(propertyName);
+							TypeHandler typeHandler = parameterMapping.getTypeHandler();
+							if (typeHandler == null) {
+								throw new ExecutorException(
+										"There was no TypeHandler found for parameter " + propertyName + " of statement " + ms.getId());
+							}
+							typeHandler.setParameter(ps, i + 1, value, parameterMapping.getJdbcType());
 						}
-						TypeHandler typeHandler = parameterMapping.getTypeHandler();
-						if (typeHandler == null) {
-							throw new ExecutorException(
-									"There was no TypeHandler found for parameter " + propertyName + " of statement " + ms.getId());
-						}
-						typeHandler.setParameter(ps, i + 1, value, parameterMapping.getJdbcType());
 					}
 				}
 			}
@@ -247,3 +257,4 @@ public class PaginationInterceptor implements Interceptor {
 		}
 	}
 }
+// Configuration.newStatementHandler

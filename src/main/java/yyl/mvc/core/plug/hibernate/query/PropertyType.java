@@ -19,8 +19,9 @@ public enum PropertyType {
 	D(Date.class),
 	/** Boolean. */
 	B(Boolean.class),
-	/** String. */
+	/** Object. */
 	O(Object.class);
+
 	/** class. */
 	private Class<?> clazz;
 

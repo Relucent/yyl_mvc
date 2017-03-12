@@ -35,7 +35,7 @@ public class PropertyFilter {
 	private String[] propertyPaths;
 
 	/** property class and value correct */
-	private transient boolean normalized = false;
+	private transient boolean typeRevised = false;
 
 	/**
 	 * constructor.
@@ -82,11 +82,7 @@ public class PropertyFilter {
 		return new PropertyFilter(propertyName, propertyClass, matchType, matchValue);
 	}
 
-	protected void revisePropertyType(Class<?> propertyClass) {
-		this.propertyClass = propertyClass;
-	}
-
-	protected boolean normalizePropertyValue() {
+	protected boolean revisePropertyValue() {
 
 		Assert.notNull(propertyClass, "propertyClass cannot be null");
 
@@ -103,6 +99,8 @@ public class PropertyFilter {
 		} else {
 			matchValue = ConvertUtil.convert(originalMatchValue, propertyClass);
 		}
+
+		typeRevised = true;
 
 		return true;
 	}
@@ -131,11 +129,18 @@ public class PropertyFilter {
 	}
 
 	public Object getMatchValue() {
+		if (!typeRevised) {
+			revisePropertyValue();
+		}
 		return matchValue;
 	}
 
 	public Class<?> getPropertyClass() {
 		return propertyClass;
+	}
+
+	protected void setPropertyType(Class<?> propertyClass) {
+		this.propertyClass = propertyClass;
 	}
 
 	public String[] getPropertyPaths() {
@@ -146,8 +151,8 @@ public class PropertyFilter {
 		return propertyPaths.length > 1;
 	}
 
-	public boolean isReviseNormalized() {
-		return normalized;
+	protected boolean isTypeRevised() {
+		return typeRevised;
 	}
 
 	@Override
