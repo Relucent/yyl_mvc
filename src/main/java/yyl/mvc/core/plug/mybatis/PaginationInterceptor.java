@@ -13,7 +13,6 @@ import org.apache.ibatis.cache.CacheKey;
 import org.apache.ibatis.executor.BaseExecutor;
 import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.executor.ExecutorException;
-import org.apache.ibatis.executor.resultset.ResultSetHandler;
 import org.apache.ibatis.executor.statement.RoutingStatementHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
@@ -93,8 +92,7 @@ public class PaginationInterceptor implements Interceptor {
 	@Override
 	public Object plugin(Object target) {
 		// 当目标类是StatementHandler类型时，才包装目标类，否者直接返回目标本身,减少目标被代理的次数
-		return (target instanceof BaseExecutor || target instanceof StatementHandler || target instanceof ResultSetHandler)
-				? Plugin.wrap(target, this) : target;
+		return (target instanceof BaseExecutor || target instanceof StatementHandler) ? Plugin.wrap(target, this) : target;
 	}
 
 	/**

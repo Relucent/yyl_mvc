@@ -14,6 +14,7 @@ import yyl.mvc.core.util.page.Pagination;
  * @author YaoYiLang
  * @version 2015-03-07
  */
+@Deprecated
 @SuppressWarnings("serial")
 public class PaginationFilters extends PageBounds implements Pagination, Map<String, Object> {
 
