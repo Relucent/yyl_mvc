@@ -6,6 +6,9 @@ import yyl.mvc.core.plug.jdbc.dialect.Dialect;
  * JDBC查询方言Oracle实现，主要用于提供分页查询<br>
  */
 public class OracleDialect implements Dialect {
+
+	public static final OracleDialect INSTANCE = new OracleDialect();
+
 	@Override
 	public String getCountSql(String sql) {
 		return "select count(*) as COUNT___y from (" + sql + ") T___T";

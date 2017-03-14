@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import yyl.mvc.core.plug.jdbc.dialect.impl.Db2Dialect;
 import yyl.mvc.core.plug.jdbc.dialect.impl.MySqlDialect;
 import yyl.mvc.core.plug.jdbc.dialect.impl.OracleDialect;
+import yyl.mvc.core.plug.jdbc.dialect.impl.PostgreSqlDialect;
 
 public class DialectConfigurer {
 
@@ -37,11 +38,13 @@ public class DialectConfigurer {
 		try {
 			Dialect dialect = null;
 			if ("mysql".equalsIgnoreCase(className)) {
-				dialect = new MySqlDialect();
+				dialect = MySqlDialect.INSTANCE;
 			} else if ("db2".equalsIgnoreCase(className)) {
-				dialect = new Db2Dialect();
+				dialect = Db2Dialect.INSTANCE;
 			} else if ("oracle".equalsIgnoreCase(className)) {
-				dialect = new OracleDialect();
+				dialect = OracleDialect.INSTANCE;
+			} else if ("postgresql".equalsIgnoreCase(className)) {
+				dialect = PostgreSqlDialect.INSTANCE;
 			} else {
 				dialect = (Dialect) Class.forName(className).newInstance();
 			}

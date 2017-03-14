@@ -7,6 +7,8 @@ import yyl.mvc.core.plug.jdbc.dialect.Dialect;
  */
 public class Db2Dialect implements Dialect {
 
+	public static final Db2Dialect INSTANCE = new Db2Dialect();
+
 	@Override
 	public String getCountSql(String sql) {
 		return "select count(*) as COUNT___y from (" + sql + ") T___T";
