@@ -40,11 +40,27 @@ public class JdbcDaoHelper {
 	 * @return 分页查询結果
 	 */
 	public static <T> Page<T> pagedQuery(String sql, Object[] args, int start, int limit, RowMapper<T> rowMapper, JdbcTemplate jdbcTemplate) {
-		int count = jdbcTemplate.queryForObject(getDialect().getCountSql(sql), args, Long.class).intValue();
+		return pagedQuery(sql, args, start, limit, rowMapper, jdbcTemplate, getDialect());
+	}
+
+	/**
+	 * 分页查询
+	 * @param sql 查询语句
+	 * @param args 查询参数
+	 * @param start 第一条记录索引
+	 * @param limit 每页显示记录数
+	 * @param rowMapper 行映射
+	 * @param jdbcTemplate JDBC模板
+	 * @param dialect 数据方言
+	 * @return 分页查询結果
+	 */
+	public static <T> Page<T> pagedQuery(String sql, Object[] args, int start, int limit, RowMapper<T> rowMapper, JdbcTemplate jdbcTemplate,
+			Dialect dialect) {
+		int count = jdbcTemplate.queryForObject(dialect.getCountSql(sql), args, Long.class).intValue();
 		if (count == 0) {
 			return new SimplePage<T>(start, limit, Lists.<T> newArrayList(), 0);
 		}
-		List<T> records = jdbcTemplate.query(getDialect().getLimitSql(sql, start, limit), args, rowMapper);
+		List<T> records = jdbcTemplate.query(dialect.getLimitSql(sql, start, limit), args, rowMapper);
 		return new SimplePage<T>(start, limit, records, count);
 	}
 
