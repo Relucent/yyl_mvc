@@ -332,7 +332,7 @@ public class BeanUtil {
 	}
 
 	private static void hasText(String text, String message) {
-		if (text != null) {
+		if (text == null || text.isEmpty()) {
 			throw new IllegalArgumentException(message);
 		}
 	}
