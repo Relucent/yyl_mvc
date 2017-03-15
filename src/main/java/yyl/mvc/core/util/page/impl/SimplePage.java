@@ -11,14 +11,11 @@ import yyl.mvc.core.util.page.Page;
 @SuppressWarnings("serial")
 public class SimplePage<T> implements Page<T> {
 
-	// =================================Constants=============================================
-	public static final int DEFAULT_LIMIT = 20;
-
 	// =================================Fields================================================
 	/** 开始查询 的数据索引号 (从0开始) */
 	private int start = 0;
 	/** 每页条数 */
-	private int limit = DEFAULT_LIMIT;
+	private int limit = SimplePagination.DEFAULT_LIMIT;
 	/** 总记录数 */
 	private int total = 0;
 	/** 当前页数据 */

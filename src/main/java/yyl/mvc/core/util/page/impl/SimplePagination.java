@@ -13,12 +13,15 @@ import yyl.mvc.core.util.page.Pagination;
 @SuppressWarnings("serial")
 public class SimplePagination implements Pagination {
 
+	// =================================Constants=============================================
+	public static final int DEFAULT_LIMIT = 20;
+
 	// =================================Fields=================================================
 	/** 开始查询 的数据索引号 (从0开始) */
 	private int start = 0;
 
 	/** 每页条数 */
-	private int limit = 25;
+	private int limit = DEFAULT_LIMIT;
 
 	/** 查询参数 */
 	private Mapx filters = Mapxs.newMapx();
@@ -28,6 +31,7 @@ public class SimplePagination implements Pagination {
 	 * 构造函数
 	 */
 	public SimplePagination() {
+		this(0, DEFAULT_LIMIT);
 	}
 
 	/**
@@ -37,8 +41,7 @@ public class SimplePagination implements Pagination {
 	 */
 
 	public SimplePagination(int start, int limit) {
-		this.start = start;
-		this.limit = limit;
+		this(start, limit, Mapxs.newMapx());
 	}
 
 	/**
