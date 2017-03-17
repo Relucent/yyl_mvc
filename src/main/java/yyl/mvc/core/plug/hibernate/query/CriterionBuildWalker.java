@@ -10,24 +10,25 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.InitializingBean;
 
-import yyl.mvc.core.plug.hibernate.support.PropertiesTypeLookupStore;
+import yyl.mvc.core.plug.hibernate.support.MetadataInfoLookup;
 import yyl.mvc.core.plug.hibernate.util.HibernateUtil;
 import yyl.mvc.core.util.collect.Mapx;
 import yyl.mvc.core.util.convert.ConvertUtil;
 
-public class CriterionBuildWalker {
+public class CriterionBuildWalker implements InitializingBean {
 
 	// ==============================Fields===========================================
-	private PropertiesTypeLookupStore lookupStore;
+	private MetadataInfoLookup metadataInfoLookup;
 
 	// ==============================Constructors=====================================
 	public CriterionBuildWalker() {
-		this(new PropertiesTypeLookupStore());
+		this(new MetadataInfoLookup());
 	}
 
-	public CriterionBuildWalker(PropertiesTypeLookupStore lookupStore) {
-		this.lookupStore = lookupStore;
+	public CriterionBuildWalker(MetadataInfoLookup metadataInfoLookup) {
+		this.metadataInfoLookup = metadataInfoLookup;
 	}
 
 	// ==============================Methods==========================================
@@ -88,7 +89,7 @@ public class CriterionBuildWalker {
 	private boolean revisePropertyType(PropertyFilter propertyFilter, Class<?> entityClass, boolean force) {
 		Class<?> propertyClass = propertyFilter.getPropertyClass();
 		if (force || propertyClass == null || ConvertUtil.isStandardType(propertyClass)) {
-			propertyClass = lookupStore.getPropertyType(entityClass, propertyFilter.getPropertyName());
+			propertyClass = metadataInfoLookup.getPropertyType(entityClass, propertyFilter.getPropertyName());
 			propertyFilter.setPropertyType(propertyClass);
 		}
 		return propertyFilter.revisePropertyValue();
@@ -120,5 +121,18 @@ public class CriterionBuildWalker {
 		default:
 			return Restrictions.eq(propertyName, matchValue);
 		}
+	}
+
+	// ==============================OverrideMethods==================================
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		if (metadataInfoLookup == null) {
+			throw new IllegalArgumentException("Property 'metadataInfoLookup' is required");
+		}
+	}
+
+	// ==============================IocMethods=======================================
+	public void setMetadataInfoLookup(MetadataInfoLookup metadataInfoLookup) {
+		this.metadataInfoLookup = metadataInfoLookup;
 	}
 }
