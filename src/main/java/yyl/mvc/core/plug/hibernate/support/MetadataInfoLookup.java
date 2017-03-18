@@ -72,6 +72,11 @@ public class MetadataInfoLookup implements InitializingBean {
 		return new MetadataInfo<T>(classMetadata, sessionFactoryImplementor);
 	}
 
+	//!
+	public SessionFactoryImplementor getSessionFactoryImplementor() {
+		return this.sessionFactoryImplementor;
+	}
+
 	// ==============================OverrideMethods==================================
 	@Override
 	public void afterPropertiesSet() throws Exception {

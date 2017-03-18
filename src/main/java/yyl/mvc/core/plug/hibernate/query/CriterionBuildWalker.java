@@ -10,6 +10,7 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.springframework.beans.factory.InitializingBean;
 
 import yyl.mvc.core.plug.hibernate.support.MetadataInfoLookup;
@@ -123,16 +124,27 @@ public class CriterionBuildWalker implements InitializingBean {
 		}
 	}
 
+	// ==============================Constructors=====================================
+	protected MetadataInfoLookup createMetadataInfoLookup(SessionFactoryImplementor sessionFactoryImplementor) {
+		return new MetadataInfoLookup(sessionFactoryImplementor);
+	}
+
 	// ==============================OverrideMethods==================================
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (metadataInfoLookup == null) {
-			throw new IllegalArgumentException("Property 'metadataInfoLookup' is required");
+			throw new IllegalArgumentException("'sessionFactoryImplementor' or 'metadataInfoLookup' is required");
 		}
 	}
 
 	// ==============================IocMethods=======================================
 	public void setMetadataInfoLookup(MetadataInfoLookup metadataInfoLookup) {
 		this.metadataInfoLookup = metadataInfoLookup;
+	}
+
+	public void setSessionFactoryImplementor(SessionFactoryImplementor sessionFactoryImplementor) {
+		if (this.metadataInfoLookup == null || sessionFactoryImplementor != this.metadataInfoLookup.getSessionFactoryImplementor()) {
+			this.metadataInfoLookup = createMetadataInfoLookup(sessionFactoryImplementor);
+		}
 	}
 }
