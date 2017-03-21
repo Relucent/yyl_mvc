@@ -5,7 +5,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -25,12 +24,11 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * HTTP工具类.
  * @author YaoYiLang
- * @version 2014-12-06 09:30
+ * @version 2012-12-06 09:30
  */
 public class HttpUtil {
 
@@ -155,8 +153,8 @@ public class HttpUtil {
 	 * @param method 请求的方法
 	 * @param headers HTTP头数据
 	 */
-	public static HttpURLConnection getHttpConnection(String url, String method, Map<String, String> headers) throws IOException,
-			NoSuchAlgorithmException, NoSuchProviderException, KeyManagementException {
+	public static HttpURLConnection getHttpConnection(String url, String method, Map<String, String> headers)
+			throws IOException, NoSuchAlgorithmException, NoSuchProviderException, KeyManagementException {
 		URL _url = new URL(url);
 		HttpURLConnection conn = (HttpURLConnection) _url.openConnection();
 		if (conn instanceof HttpsURLConnection) {
@@ -308,52 +306,7 @@ public class HttpUtil {
 			throw new RuntimeException(e);
 		}
 	}
-	/**
-	 * 
-	 * <br>
-	 * <b>功能：</b>输出json格式<br>
-	 * <b>作者：</b>fred<br>
-	 * <b>日期：</b> Jun 14, 2016 <br>
-	 * @param response
-	 * @param jsonStr
-	 * @throws Exception
-	 */
-	public static void writerJson(HttpServletResponse response,String jsonStr) {
-			writer(response,jsonStr);
-	}
-	/**
-	 * 
-	 * <br>
-	 * <b>功能：</b>输出HTML代码<br>
-	 * <b>日期：</b> Jun 14, 2016 <br>
-	 * @param response
-	 * @param htmlStr
-	 * @throws Exception
-	 */
-	public static void writerHtml(HttpServletResponse response,String htmlStr) {
-		writer(response,htmlStr);
-	}
-	/**
-	 * 
-	 * @param response
-	 * @param str
-	 */
-	private static void writer(HttpServletResponse response,String str){
-		try {
-			//StringBuffer result = new StringBuffer();
-			//设置页面不缓存
-			response.setHeader("Pragma", "No-cache");
-			response.setHeader("Cache-Control", "no-cache");
-			response.setCharacterEncoding("UTF-8");
-			PrintWriter out= null;
-			out = response.getWriter();
-			out.print(str);
-			out.flush();
-			out.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	} 
+
 	// =================================InnerClasses===========================================
 	/**
 	 * HTTPS域名校验
