@@ -1,5 +1,7 @@
 package yyl.mvc.core.plug.spring.servlet;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -8,6 +10,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
+
+import com.google.common.base.Throwables;
+import com.google.common.collect.Maps;
 
 import yyl.mvc.core.plug.expection.PromptException;
 import yyl.mvc.core.util.collect.Mapx;
@@ -22,6 +27,7 @@ public class SpringMvcExceptionResolver extends SimpleMappingExceptionResolver i
 
 	// ==============================Fields===========================================
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
+	protected String errorPage = "/_common/error";
 
 	// ==============================Methods==========================================
 	/**
@@ -45,13 +51,12 @@ public class SpringMvcExceptionResolver extends SimpleMappingExceptionResolver i
 				response.setCharacterEncoding("utf-8");
 				ControllerUtil.write(error, response);
 			} catch (Exception e) {
-				// logger.error("!", ex);
+				logger.error("!", e);
 			}
 		} else {
-			System.out.println("---------------");
-			// Map<String, Object> map = Maps.newHashMap();
-			// map.put("errorMsg", Throwables.getStackTraceAsString(ex));//将错误信息传递给view
-			// return new ModelAndView("error", map);
+			Map<String, Object> map = Maps.newHashMap();
+			map.put("errorMsg", Throwables.getStackTraceAsString(ex));//将错误信息传递给view
+			return new ModelAndView(errorPage, map);
 		}
 		return new ModelAndView();
 	}
@@ -66,5 +71,10 @@ public class SpringMvcExceptionResolver extends SimpleMappingExceptionResolver i
 		} else {
 			logger.error("!", ex);
 		}
+	}
+
+	// ==============================IocMethods=======================================
+	public void setErrorPage(String errorPage) {
+		this.errorPage = errorPage;
 	}
 }
