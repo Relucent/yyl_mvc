@@ -11,7 +11,7 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.multipart.MultipartResolver;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -102,9 +102,14 @@ public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
 
 	@Bean
 	public MultipartResolver multipartResolver() {
-		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
-		resolver.setDefaultEncoding("utf-8");
-		resolver.setMaxUploadSize(104857600L);
+		//基于 commons-fileupload 的Multipart支持
+		//CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+		//resolver.setDefaultEncoding("utf-8");
+		//resolver.setMaxUploadSize(104857600L);
+
+		//基于 Servlet 3.0 的Multipart支持
+		//如果需要设置上传文件大小可以注入 MultipartConfigElement 
+		StandardServletMultipartResolver resolver = new StandardServletMultipartResolver();
 		return resolver;
 	}
 }
