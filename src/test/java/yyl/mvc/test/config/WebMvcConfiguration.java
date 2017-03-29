@@ -28,11 +28,23 @@ import yyl.mvc.core.plug.spring.servlet.SpringMvcExceptionResolver;
 import yyl.mvc.test.plug.PaginationMethodArgumentResolver;
 
 @Configuration
+//@EnableWebMvc
 public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
 
 	// ==============================Fields===========================================
 	//...
 	// ==============================Methods==========================================
+
+	//[EnableWebMvc]
+	//@Bean
+	//public UrlBasedViewResolver setupViewResolver() {
+	//	UrlBasedViewResolver resolver = new UrlBasedViewResolver();
+	//	resolver.setPrefix("/WEB-INF/jsp/");
+	//	resolver.setSuffix(".jsp");
+	//	resolver.setViewClass(JstlView.class);
+	//	return resolver;
+	//}
+
 	/** 类型转换 */
 	@Override
 	public void addFormatters(FormatterRegistry registry) {
