@@ -69,17 +69,17 @@ public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
 	}
 
 	@Override
-	public void addViewControllers(ViewControllerRegistry registry) {
-		registry.addViewController("/").setViewName("forward:/default.html");
-		registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
-		super.addViewControllers(registry);
-	}
-
-	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
 		super.addArgumentResolvers(argumentResolvers);
 		argumentResolvers.add(new PaginationMethodArgumentResolver());
 	}
+
+	//// @Override
+	//// public void addViewControllers(ViewControllerRegistry registry) {
+	//// 	registry.addViewController("/").setViewName("forward:/default.html");
+	//// 	registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
+	//// 	super.addViewControllers(registry);
+	//// }
 
 	// ==============================BeanMethods======================================
 	@Bean
