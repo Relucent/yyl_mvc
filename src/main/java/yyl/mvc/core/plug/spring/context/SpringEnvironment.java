@@ -9,6 +9,7 @@ import org.springframework.web.context.ContextLoader;
 /**
  * Environment 环境变量，主要用于获取spring的托管的Bean<br>
  */
+@Deprecated
 public class SpringEnvironment {
 
 	/**
