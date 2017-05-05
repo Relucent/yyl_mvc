@@ -1,5 +1,6 @@
 package yyl.mvc.core.plug.spring.servlet;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,8 +16,6 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 
 import yyl.mvc.core.plug.expection.PromptException;
-import yyl.mvc.core.util.collect.Mapx;
-import yyl.mvc.core.util.collect.Mapxs;
 import yyl.mvc.core.util.web.ControllerUtil;
 import yyl.mvc.core.util.web.WebUtil;
 
@@ -44,7 +43,7 @@ public class SpringMvcExceptionResolver extends SimpleMappingExceptionResolver i
 				if (message == null) {
 					message = "Service Error !";
 				}
-				Mapx error = Mapxs.newMapx();
+				Map<String, Object> error = new HashMap<>();
 				error.put("successed", false);
 				error.put("message", message);
 				error.put("@failure", Boolean.TRUE);// failure|success
