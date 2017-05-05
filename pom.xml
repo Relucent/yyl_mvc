@@ -26,6 +26,7 @@
 		<aspectj.version>1.8.10</aspectj.version>
 		<spring.version>4.3.7.RELEASE</spring.version>
 		<c3p0.version>0.9.5.2</c3p0.version>
+		<hikaricp.version>2.6.1</hikaricp.version>
 		<hibernate.version>4.3.11.Final</hibernate.version>
 		<hibernate-validator.version>5.2.2.Final</hibernate-validator.version>
 		<mybatis.version>3.2.3</mybatis.version>
@@ -129,6 +130,13 @@
 			<artifactId>c3p0</artifactId>
 			<version>${c3p0.version}</version>
 		</dependency>
+
+		<!-- [<dependency>] -->
+		<!-- [<groupId>com.zaxxer</groupId>] -->
+		<!-- [<artifactId>HikariCP</artifactId>] -->
+		<!-- [<version>${hikaricp.version}</version>] -->
+		<!-- [</dependency>] -->
+
 
 		<dependency>
 			<groupId>mysql</groupId>
