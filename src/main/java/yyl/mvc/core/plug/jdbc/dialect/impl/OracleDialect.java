@@ -20,6 +20,11 @@ public class OracleDialect implements Dialect {
 				+ " ) X___X WHERE X___X.ROWNO___y > " + start + " ";
 	}
 
+	@Override
+	public String testQuery() {
+		return "select 1 from dual";
+	}
+
 	// @Override
 	// public String getTableExistsSql(String table) {
 	// return "SELECT COUNT(*) AS count_ FROM USER_TABLES WHERE TABLE_NAME = '" + table + "'";

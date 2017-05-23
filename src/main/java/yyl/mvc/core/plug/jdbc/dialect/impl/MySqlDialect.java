@@ -18,4 +18,9 @@ public class MySqlDialect implements Dialect {
 	public String getLimitSql(String sql, int start, int limit) {
 		return sql + " limit " + start + "," + limit;
 	}
+
+	@Override
+	public String testQuery() {
+		return "select 1";
+	}
 }

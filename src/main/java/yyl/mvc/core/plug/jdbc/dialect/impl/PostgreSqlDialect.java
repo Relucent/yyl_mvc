@@ -18,4 +18,9 @@ public class PostgreSqlDialect implements Dialect {
 	public String getLimitSql(String sql, int start, int limit) {
 		return sql + " limit " + limit + " offset " + start;
 	}
+
+	@Override
+	public String testQuery() {
+		return "select version()";
+	}
 }

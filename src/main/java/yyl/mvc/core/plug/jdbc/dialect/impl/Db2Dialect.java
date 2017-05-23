@@ -50,4 +50,9 @@ public class Db2Dialect implements Dialect {
 		}
 		return pagingSelect.toString();
 	}
+
+	@Override
+	public String testQuery() {
+		return "SELECT 1 FROM SYSIBM.SYSDUMMY1";
+	}
 }

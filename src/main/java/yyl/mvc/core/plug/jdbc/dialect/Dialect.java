@@ -20,4 +20,10 @@ public interface Dialect {
 	 * @return 总记录数的SQL
 	 */
 	public String getCountSql(String sql);
+
+	/**
+	 * 获得测试用的SQL
+	 * @return 测试SQL
+	 */
+	public String testQuery();
 }
