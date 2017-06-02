@@ -105,4 +105,33 @@ public class EncodeUtil {
 	public static String xmlUnescape(String xmlEscaped) {
 		return StringEscapeUtils.unescapeXml(xmlEscaped);
 	}
+
+	/**
+	 * 正则表达式特殊字符转义.
+	 */
+	public static String regexEscape(String keyword) {
+		StringBuilder buffer = new StringBuilder();
+		for (char c : keyword.toCharArray()) {
+			switch (c) {
+			case '\\':
+			case '$':
+			case '(':
+			case ')':
+			case '*':
+			case '+':
+			case '.':
+			case '[':
+			case ']':
+			case '?':
+			case '^':
+			case '{':
+			case '}':
+			case '|':
+				buffer.append("\\");
+			default:
+				buffer.append(c);
+			}
+		}
+		return buffer.toString();
+	}
 }
