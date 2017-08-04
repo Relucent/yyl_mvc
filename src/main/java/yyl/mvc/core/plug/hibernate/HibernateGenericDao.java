@@ -394,7 +394,7 @@ public class HibernateGenericDao extends HibernateDaoSupport {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected <T> Page<T> pagedQuery(Criteria criteria, int start, int limit) {
-		Assert.notNull(criteria);
+		Assert.notNull(criteria, "criteria==null");
 		Assert.isTrue(start >= 0, "start should be eg 0");
 		Integer total = getCountByCriteria(criteria);
 		if (total < 1) {
@@ -447,7 +447,7 @@ public class HibernateGenericDao extends HibernateDaoSupport {
 		if (criteria instanceof CriteriaImpl) {
 			impl = CriteriaImpl.class.cast(criteria);
 		} else {
-			Assert.isTrue(criteria instanceof CriteriaImpl);
+			Assert.isTrue(criteria instanceof CriteriaImpl, "!(criteria instanceof CriteriaImpl)");
 		}
 
 		// 先把Projection、Resultk和OrderBy条件取出来,处理后再执行Count操作
@@ -660,8 +660,8 @@ public class HibernateGenericDao extends HibernateDaoSupport {
 	@SuppressWarnings("unchecked")
 	public <T extends Serializable> T getId(Class<?> entityClass, Object entity)
 			throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-		Assert.notNull(entity);
-		Assert.notNull(entityClass);
+		Assert.notNull(entity, "entity==null");
+		Assert.notNull(entityClass, "entityClass==null");
 		return (T) PropertyUtils.getProperty(entity, getIdName(entityClass));
 	}
 
@@ -671,7 +671,7 @@ public class HibernateGenericDao extends HibernateDaoSupport {
 	 * @return 主键名称
 	 */
 	protected String getIdName(Class<?> entityClass) {
-		Assert.notNull(entityClass);
+		Assert.notNull(entityClass, "entityClass==null");
 		ClassMetadata meta = getClassMetadata(entityClass);
 		Assert.notNull(meta, "Class " + entityClass + " not define in hibernate session factory.");
 		String idName = meta.getIdentifierPropertyName();
@@ -685,7 +685,7 @@ public class HibernateGenericDao extends HibernateDaoSupport {
 	 * @return 实体对象的元数据
 	 */
 	protected ClassMetadata getClassMetadata(Class<?> entityClass) {
-		Assert.notNull(entityClass);
+		Assert.notNull(entityClass, "entityClass==null");
 		return getSessionFactory().getClassMetadata(entityClass);
 	}
 
