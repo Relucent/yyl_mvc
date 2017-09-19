@@ -38,6 +38,7 @@
 		<poi.version>3.14</poi.version>
 		<pinyin4j.version>2.5.0</pinyin4j.version>
 		<guava.version>14.0.1</guava.version>
+		<quartz.version>2.2.3</quartz.version>
 		<zookeeper.version>3.4.9</zookeeper.version>
 		<curator.version>2.11.1</curator.version>
 		<servlet.version>3.0.1</servlet.version>
@@ -104,6 +105,11 @@
 
 		<dependency>
 			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
 			<artifactId>spring-orm</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
@@ -123,6 +129,17 @@
 		<!-- [ <artifactId>aspectjweaver</artifactId>] -->
 		<!-- [ <version>${aspectj.version}</version>] -->
 		<!-- [</dependency>] -->
+
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz</artifactId>
+			<version>${quartz.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz-jobs</artifactId>
+			<version>${quartz.version}</version>
+		</dependency>
 
 
 		<dependency>
