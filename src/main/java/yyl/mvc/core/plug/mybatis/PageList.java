@@ -1,10 +1,16 @@
 package yyl.mvc.core.plug.mybatis;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializable;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 
 import yyl.mvc.core.util.page.Page;
 
@@ -14,7 +20,7 @@ import yyl.mvc.core.util.page.Page;
  * @version 2015-03-07
  */
 @SuppressWarnings("serial")
-public class PageList<T> implements Page<T>, List<T> {
+public class PageList<T> implements Page<T>, List<T>, JsonSerializable {
 
 	// =================================Fields================================================
 	/** 开始查询 的数据索引号 (从0开始) */
@@ -213,5 +219,21 @@ public class PageList<T> implements Page<T>, List<T> {
 	@Override
 	public List<T> subList(int fromIndex, int toIndex) {
 		return records.subList(fromIndex, toIndex);
+	}
+
+	// =================================JsonSerialize==========================================
+	@Override
+	public void serialize(JsonGenerator gen, SerializerProvider provider) throws IOException {
+		gen.writeStartObject();
+		gen.writeNumberField("start", start);
+		gen.writeNumberField("limit", limit);
+		gen.writeNumberField("total", total);
+		gen.writeObjectField("records", records);
+		gen.writeEndObject();
+	}
+
+	@Override
+	public void serializeWithType(JsonGenerator gen, SerializerProvider serializers, TypeSerializer typeSer) throws IOException {
+		throw new UnsupportedOperationException();
 	}
 }
