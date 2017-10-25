@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.session.RowBounds;
 
 import yyl.mvc.core.util.page.Page;
+import yyl.mvc.core.util.page.Pagination;
 import yyl.mvc.core.util.page.impl.SimplePage;
 
 /**
@@ -27,6 +28,10 @@ public class PageBounds extends RowBounds {
 
 	public int getTotalCount() {
 		return totalCount;
+	}
+
+	public static PageBounds of(Pagination pagination) {
+		return new PageBounds(pagination.getStart(), pagination.getLimit());
 	}
 
 	/**

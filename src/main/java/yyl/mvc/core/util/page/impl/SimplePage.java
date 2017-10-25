@@ -51,6 +51,16 @@ public class SimplePage<T> implements Page<T> {
 		this.total = total;
 	}
 
+	/**
+	 * 构造函数
+	 */
+	public SimplePage(Page<T> page) {
+		this.start = page.getStart();
+		this.limit = page.getLimit();
+		this.records = page.getRecords();
+		this.total = page.getTotal();
+	}
+
 	// =================================Methods================================================
 	/** 获取从第几条数据开始查询 */
 	public int getStart() {

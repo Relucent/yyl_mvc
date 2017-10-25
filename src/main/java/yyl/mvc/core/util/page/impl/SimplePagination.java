@@ -56,6 +56,16 @@ public class SimplePagination implements Pagination {
 		this.filters = filters;
 	}
 
+	/**
+	 * 构造函数
+	 * @param pagination 分页对象
+	 */
+	public SimplePagination(Pagination pagination) {
+		this.start = pagination.getStart();
+		this.limit = pagination.getLimit();
+		this.filters = pagination.getFilters();
+	}
+
 	// =================================Methods================================================
 
 	public int getStart() {
