@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 /**
  * 使用ServletContainerInitializer实现，可以在容器启动时自动回调其onStartup方法，插入一些功能<br>
  * 使用时需要在对应的jar包的 META-INF/services 目录创建一个名为 javax.servlet.ServletContainerInitializer的文件， 该文件指定具体的ServletContainerInitializer实现类<br>
+ * HandlesTypes注解表示CustomServletContainerInitializer可以处理的类,在onStartup 方法中,可以通过Set<Class<?>> c 获取得到 <br>
  */
 @HandlesTypes({ HttpServlet.class, Filter.class })
 public class HelloServletContainerInitializer implements ServletContainerInitializer {
