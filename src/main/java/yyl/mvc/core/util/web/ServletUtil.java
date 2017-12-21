@@ -1,5 +1,6 @@
 package yyl.mvc.core.util.web;
 
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.util.Assert;
 
 import yyl.mvc.core.util.codec.EncodeUtil;
@@ -218,5 +220,31 @@ public class ServletUtil {
 	public static String encodeHttpBasic(String userName, String password) throws UnsupportedEncodingException {
 		String encode = userName + ":" + password;
 		return "Basic " + EncodeUtil.base64Encode(encode.getBytes("UTF-8"));
+	}
+
+	/**
+	 * 写入响应主体内容
+	 * @param response HTTP响应
+	 * @param content 响应主体内容
+	 */
+	public static void writeBody(HttpServletResponse response, String content) {
+		try {
+			response.getWriter().write(content);
+		} catch (Exception e) {
+			/* ignore */
+		}
+	}
+
+	/**
+	 * 写入响应主体内容
+	 * @param response HTTP响应
+	 * @param input 需要写入的内容
+	 */
+	public static void writeBody(HttpServletResponse response, InputStream input) {
+		try {
+			IOUtils.copy(input, response.getOutputStream());
+		} catch (Exception e) {
+			/* ignore */
+		}
 	}
 }
