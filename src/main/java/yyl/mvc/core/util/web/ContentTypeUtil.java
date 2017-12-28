@@ -6,7 +6,6 @@ import java.util.Map;
 
 /**
  * 根据文件后缀获得内容类型(ContentType)
- * @author _yyl
  */
 public class ContentTypeUtil {
 
