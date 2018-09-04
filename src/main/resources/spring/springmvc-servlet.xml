@@ -53,13 +53,7 @@
 	<mvc:default-servlet-handler />
 
 	<!-- SpringMVC异常处理 -->
-	<bean id="springmvcExceptionResolver" class="yyl.mvc.core.plug.spring.servlet.SpringMvcExceptionResolver">
-		<property name="exceptionMappings">
-			<props>
-				<prop key="yyl.mvc.core.plug.expection.AuthorizationException">403</prop>
-			</props>
-		</property>
-	</bean>
+	<bean id="springmvcExceptionResolver" class="yyl.mvc.core.plug.spring.servlet.SpringMvcExceptionResolver"/>
 
 	<!-- 上传文件拦截，设置最大上传文件大小 100M=100*1024*1024(B)=104857600 bytes -->
 	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
