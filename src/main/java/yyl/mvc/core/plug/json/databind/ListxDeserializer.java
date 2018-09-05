@@ -16,14 +16,17 @@ import yyl.mvc.core.util.collect.Listx;
 
 public class ListxDeserializer extends JsonDeserializer<Listx> {
 
-	@Override
-	public Listx deserialize(JsonParser parser, DeserializationContext context) throws IOException,
-			JsonProcessingException {
-		try {
-			TreeNode node = parser.readValueAsTree();
-			return TreeNodeConverts.toListx(node);
-		} catch (Exception e) {
-			return null;
-		}
-	}
+    /** Singleton instance to use. */
+    public final static ListxDeserializer INSTANCE = new ListxDeserializer();
+
+    @Override
+    public Listx deserialize(JsonParser parser, DeserializationContext context)
+            throws IOException, JsonProcessingException {
+        try {
+            TreeNode node = parser.readValueAsTree();
+            return TreeNodeConverts.toListx(node);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

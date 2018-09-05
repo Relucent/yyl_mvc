@@ -16,14 +16,18 @@ import yyl.mvc.core.util.collect.Mapx;
 
 public class MapxDeserializer extends JsonDeserializer<Mapx> {
 
-	@Override
-	public Mapx deserialize(JsonParser parser, DeserializationContext context) throws IOException, JsonProcessingException {
-		try {
-			TreeNode node = parser.readValueAsTree();
-			return TreeNodeConverts.toMapx(node);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
+    /** Singleton instance to use. */
+    public final static MapxDeserializer INSTANCE = new MapxDeserializer();
+
+    @Override
+    public Mapx deserialize(JsonParser parser, DeserializationContext context)
+            throws IOException, JsonProcessingException {
+        try {
+            TreeNode node = parser.readValueAsTree();
+            return TreeNodeConverts.toMapx(node);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
