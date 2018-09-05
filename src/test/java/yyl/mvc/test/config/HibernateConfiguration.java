@@ -13,9 +13,9 @@ import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import yyl.mvc.core.plug.hibernate.HibernateGenericDao;
-import yyl.mvc.core.plug.hibernate.session.DefaultHibernateSessionProviderImpl;
-import yyl.mvc.core.plug.hibernate.session.HibernateSessionProvider;
+import yyl.mvc.plug.hibernate.HibernateGenericDao;
+import yyl.mvc.plug.hibernate.session.DefaultHibernateSessionProviderImpl;
+import yyl.mvc.plug.hibernate.session.HibernateSessionProvider;
 
 /**
  * _Hibernate配置项
