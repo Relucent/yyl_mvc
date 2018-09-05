@@ -34,7 +34,7 @@
 	</bean>
 
 	<!-- 方言配置 -->
-	<bean id="dialectConfigurer" class="yyl.mvc.core.plug.jdbc.dialect.DialectConfigurer">
+	<bean id="dialectConfigurer" class="yyl.mvc.plug.jdbc.dialect.DialectConfigurer">
 		<property name="dialectClass" value="${jdbc.dialect}" />
 	</bean>
 

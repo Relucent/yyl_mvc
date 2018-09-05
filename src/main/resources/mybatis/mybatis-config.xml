@@ -5,6 +5,6 @@
 		<setting name="lazyLoadingEnabled" value="false" />
 	</settings>
 	<plugins>
-		<plugin interceptor="yyl.mvc.core.plug.mybatis.PaginationInterceptor" />
+		<plugin interceptor="yyl.mvc.plug.mybatis.PaginationInterceptor" />
 	</plugins>
 </configuration>

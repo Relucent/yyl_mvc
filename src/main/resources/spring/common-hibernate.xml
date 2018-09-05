@@ -38,8 +38,8 @@
 
 
 	<!-- 为DAO的 HibernateSession提供者 -->
-	<bean id="hibernateSessionProvider" class="yyl.mvc.core.plug.hibernate.session.DefaultHibernateSessionProviderImpl" />
+	<bean id="hibernateSessionProvider" class="yyl.mvc.plug.hibernate.session.DefaultHibernateSessionProviderImpl" />
 
 	<!-- 通用HibernateDao -->
-	<bean id="hibernateGenericDao" class="yyl.mvc.core.plug.hibernate.HibernateGenericDao" />
+	<bean id="hibernateGenericDao" class="yyl.mvc.plug.hibernate.HibernateGenericDao" />
 </beans>

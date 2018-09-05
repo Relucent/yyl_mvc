@@ -23,6 +23,6 @@
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
 		<property name="basePackage" value="yyl"/>
 		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
-		<property name="annotationClass" value="yyl.mvc.core.plug.mybatis.Mapper"/>
+		<property name="annotationClass" value="yyl.mvc.plug.mybatis.Mapper"/>
 	</bean>
 </beans>
