@@ -59,7 +59,7 @@
 		</where>
 	</sql>
 
-	<select id="getByPage" parameterType="yyl.mvc.core.util.page.Pagination" resultMap="demo">
+	<select id="find" parameterType="yyl.mvc.core.util.page.Pagination" resultMap="demo">
 	SELECT id,
 		<include refid="columns" />
 		FROM

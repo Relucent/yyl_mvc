@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
+import yyl.mvc.core.plug.jdbc.Dialect;
 import yyl.mvc.core.util.page.Page;
 
 /**
@@ -58,21 +59,8 @@ public class JdbcTemplatex extends JdbcTemplate {
 	 * @param rowMapper 行映射
 	 * @return 分页查询結果
 	 */
-	public <T> Page<T> pagedQuery(String sql, Object[] args, int start, int limit, RowMapper<T> rowMapper) {
-		return JdbcDaoHelper.pagedQuery(sql, args, start, limit, rowMapper, this);
-	}
-
-	/**
-	 * 分页查询
-	 * @param sql 查询语句
-	 * @param args 查询参数
-	 * @param start 第一条记录索引
-	 * @param limit 每页显示记录数
-	 * @param rowMapper 行映射
-	 * @return 分页查询結果
-	 */
-	public <T> Page<T> pagedQuery(CharSequence sql, List<Object> args, int start, int limit, RowMapper<T> rowMapper) {
-		return JdbcDaoHelper.pagedQuery(sql.toString(), args.toArray(), start, limit, rowMapper, this);
+	public <T> Page<T> pagedQuery(String sql, Object[] args, int start, int limit, RowMapper<T> rowMapper,Dialect dialect) {
+		return JdbcDaoHelper.pagedQuery(sql, args, start, limit, rowMapper, this,dialect);
 	}
 
 	/**

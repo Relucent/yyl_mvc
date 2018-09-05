@@ -19,14 +19,14 @@ public abstract class HibernateEntityBaseDao<T> extends HibernateSimpleEntityDao
 
 	/**
 	 * 默认的分页查询
-	 * @param pageQuery 查询条件
+	 * @param pagination 分页条件
+	 * @param filters 过滤条件
 	 * @return 分页对象，包含该页数据
 	 */
-	public Page<T> pagedQuery(Pagination pagination) {
+	public Page<T> pagedQuery(Pagination pagination,Mapx filters) {
 		Criteria criteria = super.createCriteria(super.entityClass);
 		int start = pagination.getStart();
 		int limit = pagination.getLimit();
-		Mapx filters = pagination.getFilters();
 		buildCriterions(criteria, filters, super.entityClass);
 		return super.pagedQuery(criteria, start, limit);
 	}

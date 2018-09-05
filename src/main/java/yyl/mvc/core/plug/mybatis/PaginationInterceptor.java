@@ -1,46 +1,36 @@
 package yyl.mvc.core.plug.mybatis;
 
+import java.lang.reflect.Field;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.dbutils.DbUtils;
-import org.apache.commons.lang3.StringUtils;
+import javax.sql.DataSource;
+
 import org.apache.ibatis.cache.CacheKey;
-import org.apache.ibatis.executor.BaseExecutor;
-import org.apache.ibatis.executor.ErrorContext;
-import org.apache.ibatis.executor.ExecutorException;
-import org.apache.ibatis.executor.statement.RoutingStatementHandler;
-import org.apache.ibatis.executor.statement.StatementHandler;
+import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
-import org.apache.ibatis.mapping.ParameterMapping;
-import org.apache.ibatis.mapping.ParameterMode;
+import org.apache.ibatis.mapping.ResultMap;
+import org.apache.ibatis.mapping.ResultMapping;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.plugin.Intercepts;
 import org.apache.ibatis.plugin.Invocation;
 import org.apache.ibatis.plugin.Plugin;
 import org.apache.ibatis.plugin.Signature;
-import org.apache.ibatis.reflection.MetaObject;
-import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
-import org.apache.ibatis.reflection.factory.ObjectFactory;
-import org.apache.ibatis.reflection.property.PropertyTokenizer;
-import org.apache.ibatis.reflection.wrapper.DefaultObjectWrapperFactory;
-import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
-import org.apache.ibatis.scripting.xmltags.ForEachSqlNode;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
-import org.apache.ibatis.type.TypeHandler;
-import org.apache.ibatis.type.TypeHandlerRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 
-import yyl.mvc.core.plug.jdbc.dialect.Dialect;
-import yyl.mvc.core.plug.jdbc.dialect.DialectConfigurer;
+import yyl.mvc.core.plug.jdbc.DelegatingDialect;
+import yyl.mvc.core.plug.jdbc.Dialect;
 import yyl.mvc.core.util.page.Pagination;
 
 /**
@@ -49,210 +39,264 @@ import yyl.mvc.core.util.page.Pagination;
  * @see org.apache.ibatis.plugin.Interceptor
  * @author _yyl
  */
-@Intercepts({
-		@Signature(type = BaseExecutor.class, method = "query", args = { MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class,
-				CacheKey.class, BoundSql.class }), //
-		@Signature(type = StatementHandler.class, method = "prepare", args = { Connection.class }), //
+@SuppressWarnings({"unchecked"})
+@Intercepts({//
+        @Signature(type = Executor.class, method = "query", args = {//
+                MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class}),
+        @Signature(type = Executor.class, method = "query", args = {//
+                MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class, //
+                CacheKey.class, BoundSql.class})//
 })
 public class PaginationInterceptor implements Interceptor {
 
-	// ==============================Fields===========================================
-	protected final Logger logger = LoggerFactory.getLogger(getClass());
-	private static final ObjectFactory DEFAULT_OBJECT_FACTORY = new DefaultObjectFactory();
-	private static final ObjectWrapperFactory DEFAULT_OBJECT_WRAPPER_FACTORY = new DefaultObjectWrapperFactory();
-	private static ThreadLocal<Object> PAGINATION_SIGN = new ThreadLocal<>();
+    // ==============================Fields===========================================
+    private static final String COUNT_SUFFIX = "_COUNT";
+    private static final List<ResultMapping> EMPTY_RESULTMAPPING = new ArrayList<ResultMapping>(0);
+    private static final Field ADDITIONAL_PARAMETERS_FIELD;
+    static {
+        try {
+            ADDITIONAL_PARAMETERS_FIELD = BoundSql.class.getDeclaredField("additionalParameters");
+            ADDITIONAL_PARAMETERS_FIELD.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Map<String, MappedStatement> countMsCache = new ConcurrentHashMap<>();
+    private final DelegatingDialect dialect = new DelegatingDialect();
 
-	// ==============================Methods==========================================
-	/**
-	 * 插件拦截方法
-	 * @param ivk MyBatis调用
-	 * @return 查询结果
-	 */
-	@Override
-	public Object intercept(Invocation ivk) throws Throwable {
+    // ==============================Methods==========================================
+    /**
+     * 插件拦截方法
+     * @param ivk MyBatis调用
+     * @return 查询结果
+     */
+    @Override
+    public Object intercept(Invocation ivk) throws Throwable {
+        try {
+            Executor executor = (Executor) ivk.getTarget();
+            Object[] args = ivk.getArgs();
 
-		Object target = ivk.getTarget();
+            MappedStatement ms = (MappedStatement) args[0];
+            Object parameter = args[1];
+            RowBounds rowBounds = (RowBounds) args[2];
+            ResultHandler resultHandler = (ResultHandler) args[3];
 
-		if (target instanceof BaseExecutor) {
-			return interceptBaseExecutor(ivk);
-		}
+            CacheKey cacheKey;
+            BoundSql boundSql;
 
-		if (target instanceof RoutingStatementHandler) {
-			return interceptStatementHandler(ivk);
-		}
+            if (args.length == 4) {
+                boundSql = ms.getBoundSql(parameter);
+                cacheKey = executor.createCacheKey(ms, parameter, rowBounds, boundSql);
+            }
+            // args.length == 6
+            else {
+                cacheKey = (CacheKey) args[4];
+                boundSql = (BoundSql) args[5];
+            }
 
-		return ivk.proceed();
-	}
+            // 数据库方言切换
+            DataSource dataSource = ms.getConfiguration().getEnvironment().getDataSource();
+            Connection conn = null;
+            try {
+                conn = DataSourceUtils.getConnection(dataSource);
+                dialect.route(conn);
+            } finally {
+                DataSourceUtils.releaseConnection(conn, dataSource);
+            }
 
-	/**
-	 * 用于生成代理类
-	 * @param target 要拦截的对象
-	 * @return 包装类
-	 */
-	@Override
-	public Object plugin(Object target) {
-		// 当目标类是StatementHandler类型时，才包装目标类，否者直接返回目标本身,减少目标被代理的次数
-		return (target instanceof BaseExecutor || target instanceof StatementHandler) ? Plugin.wrap(target, this) : target;
-	}
+            // 获得分页当前条件
+            Pagination pagination = MybatisHelper.getCurrentPagination();
 
-	/**
-	 * 获得配置的参数
-	 * @param properties 配置的参数
-	 */
-	@Override
-	public void setProperties(Properties properties) {
-	}
+            // 判断是否需要进行分页(是否插件分页)
+            if (pagination != null) {
+                // 查询总数
+                long total = obtainTotalCount(dialect, executor, ms, parameter, resultHandler, boundSql);
 
-	// ==============================ProcessMethods===================================
-	@SuppressWarnings("rawtypes")
-	protected Object interceptBaseExecutor(Invocation ivk) throws Throwable {
+                // 暂存总数
+                MybatisHelper.setTotalCount(total);
 
-		Object[] args = ivk.getArgs();//-> {MappedStatement,Object,RowBounds,ResultHandler,CacheKey,BoundSql}
-		Object parameter = args[1];
+                // 当查询总数为 0 时，直接返回空的结果
+                if (total == 0) {
+                    return new ArrayList<>();
+                }
 
-		RowBounds rowBounds = (RowBounds) args[2];
-		//判断是否分页查询
-		if (parameter instanceof Pagination) {
-			Pagination pagination = (Pagination) parameter;
-			args[1] = pagination.getFilters();
-			args[2] = rowBounds = new PageBounds(pagination.getStart(), pagination.getLimit());
-		}
+                // 根据分页条件对象创建分页对象
+                rowBounds = new RowBounds(pagination.getStart(), pagination.getLimit());
+            }
 
-		if (rowBounds != RowBounds.DEFAULT && (rowBounds.getOffset() != RowBounds.NO_ROW_OFFSET || rowBounds.getLimit() != RowBounds.NO_ROW_LIMIT)) {
-			PAGINATION_SIGN.set(Boolean.TRUE);
-		}
+            // 判断是否需要进行分页查询
+            int offset = rowBounds.getOffset();
+            int limit = rowBounds.getLimit();
+            if (offset != RowBounds.NO_ROW_OFFSET || limit != RowBounds.NO_ROW_LIMIT) {
+                // 根据方言获得分页SQL
+                String pagedSql = dialect.getLimitSql(boundSql.getSql(), offset, limit);
+                BoundSql pageBoundSql =
+                        new BoundSql(ms.getConfiguration(), pagedSql, boundSql.getParameterMappings(), parameter);
 
-		List<?> records = (List) ivk.getMethod().invoke(ivk.getTarget(), args);
+                // 添加动态SQL，可能会产生的临时参数
+                for (Map.Entry<String, Object> entry : getAdditionalParameter(boundSql).entrySet()) {
+                    pageBoundSql.setAdditionalParameter(entry.getKey(), entry.getValue());
+                }
 
-		return rowBounds instanceof PageBounds
-				? new PageList<>(rowBounds.getOffset(), rowBounds.getLimit(), records, ((PageBounds) rowBounds).getTotalCount()) : records;
-	}
+                // 执行分页查询
+                return executor.query(ms, parameter, RowBounds.DEFAULT, resultHandler, cacheKey, pageBoundSql);
+            }
 
-	protected Object interceptStatementHandler(Invocation ivk) throws Throwable {
+            // 无分页的情况
+            return ivk.proceed();
+        } finally {
+            dialect.release();
+        }
+    }
 
-		if (PAGINATION_SIGN.get() != null) {
-			//分页查询
-			RoutingStatementHandler statementHandler = (RoutingStatementHandler) ivk.getTarget();
-			MetaObject meta = MetaObject.forObject(statementHandler, DEFAULT_OBJECT_FACTORY, DEFAULT_OBJECT_WRAPPER_FACTORY);
-			RowBounds rowBounds = (RowBounds) meta.getValue("delegate.rowBounds");
+    /**
+     * 用于生成代理类
+     * @param target 要拦截的对象
+     * @return 包装类
+     */
+    @Override
+    public Object plugin(Object target) {
+        return Plugin.wrap(target, this);
+    }
 
-			//BaseStatementHandler delegate =  (BaseStatementHandler)meta.getValue("delegate");
-			//delegate.resultSetHandler -> ResultSetHandler
-			//delegate.arameterHandler -> ParameterHandler
+    /**
+     * 获得配置的参数
+     * @param properties 配置的参数
+     */
+    @Override
+    public void setProperties(Properties properties) {
+        // _ignore_
+    }
 
-			meta = getTargetMetaObject(meta);
+    // ==============================ProcessMethods===================================
 
-			MappedStatement ms = (MappedStatement) meta.getValue("delegate.mappedStatement");
+    /**
+     * 进行 COUNT 查询
+     * @param dialect 数据库方言
+     * @param executor 执行器
+     * @param ms 映射语句处理对象
+     * @param parameter 参数对象
+     * @param resultHandler 结果处理对象
+     * @param boundSql 绑定SQL对象
+     * @return 总记录数
+     */
+    private Long obtainTotalCount(Dialect dialect, Executor executor, MappedStatement ms, Object parameter,
+            ResultHandler resultHandler, BoundSql boundSql)
+            throws SQLException, IllegalArgumentException, IllegalAccessException {
+        String countMsId = ms.getId() + COUNT_SUFFIX;
 
-			BoundSql boundSql = statementHandler.getBoundSql();
-			String sql = StringUtils.trimToEmpty(boundSql.getSql());
-			int offset = rowBounds.getOffset();
-			int limit = rowBounds.getLimit();
-			Dialect dialect = DialectConfigurer.getDialect();
+        // 判断是否存在手写的 count 查询
+        MappedStatement countMs = getMappedStatement(ms.getConfiguration(), countMsId);
+        if (countMs != null) {
+            return executeManualCount(executor, countMs, parameter, boundSql, resultHandler);
+        }
 
-			if (rowBounds instanceof PageBounds) {
-				PageBounds pageBounds = (PageBounds) rowBounds;
-				pageBounds.totalCount = obtainTotalCount((Connection) ivk.getArgs()[0], ms, boundSql, dialect);
-				meta.setValue("delegate.resultSetHandler.rowBounds", RowBounds.DEFAULT);
-				meta.setValue("delegate.boundSql.sql", sql = dialect.getLimitSql(sql, offset, limit));
-			} else if (rowBounds != RowBounds.DEFAULT && (offset != RowBounds.NO_ROW_OFFSET || limit != RowBounds.NO_ROW_LIMIT)) {
-				meta.setValue("delegate.resultSetHandler.rowBounds", RowBounds.DEFAULT);
-				meta.setValue("delegate.boundSql.sql", sql = dialect.getLimitSql(sql, offset, limit));
-			}
-			if (logger.isDebugEnabled()) {
-				logger.debug("execute:" + ms.getId() + "\n" + sql);
-			}
-		}
+        countMs = countMsCache.get(countMsId);
+        // 自动创建
+        if (countMs == null) {
+            // 根据当前的 MS 创建一个 COUNT MS
+            countMs = createCountMappedStatement(ms, countMsId);
+            // 缓存 COUNT MS
+            countMsCache.put(countMsId, countMs);
+        }
 
-		return ivk.proceed();
-	}
+        return executeAutoCount(dialect, executor, countMs, parameter, boundSql, resultHandler);
+    }
 
-	// ==============================ToolMethods======================================
-	/**
-	 * 分离代理对象链(目标类可能被多个拦截器拦截，从而形成多次代理，用于分离出最原始的的目标类)
-	 * @param meta 元数据对象
-	 * @return 原始目标的元数据对象
-	 */
-	protected MetaObject getTargetMetaObject(MetaObject meta) {
-		while (meta.hasGetter("h")) {//Proxy.h -> InvocationHandler
-			Object ih = meta.getValue("h");
-			MetaObject ihm = MetaObject.forObject(ih, DEFAULT_OBJECT_FACTORY, DEFAULT_OBJECT_WRAPPER_FACTORY);
-			if (ihm.hasGetter("target")) {//Plugin.target -> object
-				Object object = meta.getValue("target");
-				meta = MetaObject.forObject(object, DEFAULT_OBJECT_FACTORY, DEFAULT_OBJECT_WRAPPER_FACTORY);
-			}
-		}
-		return meta;
-	}
 
-	/**
-	 * 获得查询的记录总数(并将记录总数存储到线程本地变量中)
-	 * @param conn 数据库连接
-	 * @param ms 映射表达式
-	 * @param boundSql 范围SQL
-	 * @param dialect 数据库方言
-	 * @throws SQLException 如果查询中出现错误则抛出该异常
-	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private int obtainTotalCount(Connection conn, MappedStatement ms, BoundSql boundSql, Dialect dialect) throws SQLException {
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try {
-			String countSql = dialect.getCountSql(boundSql.getSql());
-			ps = conn.prepareStatement(countSql);
-			BoundSql countBoundSql = new BoundSql(ms.getConfiguration(), countSql, boundSql.getParameterMappings(), boundSql.getParameterObject());
-			ErrorContext.instance().activity("setting parameters").object(ms.getParameterMap().getId());
+    /**
+     * 尝试获取已经存在的在映射语句处理对象
+     * @param configuration 配置对象
+     * @param msId 映射语句ID
+     * @return 映射语句处理对象
+     */
+    private static MappedStatement getMappedStatement(Configuration configuration, String msId) {
+        MappedStatement ms = null;
+        try {
+            ms = configuration.getMappedStatement(msId, false);
+        } catch (Throwable t) {
+            // ignore
+        }
+        return ms;
+    }
 
-			//DefaultParameterHandler.setParameters
-			{
-				List<ParameterMapping> parameterMappings = countBoundSql.getParameterMappings();
-				Object parameter = countBoundSql.getParameterObject();
-				if (parameterMappings != null) {
-					Configuration configuration = ms.getConfiguration();
-					TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();
-					MetaObject metaObject = parameter == null ? null : configuration.newMetaObject(parameter);
-					for (int i = 0; i < parameterMappings.size(); i++) {
-						ParameterMapping parameterMapping = parameterMappings.get(i);
-						if (parameterMapping.getMode() != ParameterMode.OUT) {
-							Object value;
-							String propertyName = parameterMapping.getProperty();
-							PropertyTokenizer prop = new PropertyTokenizer(propertyName);
-							if (parameter == null) {
-								value = null;
-							} else if (typeHandlerRegistry.hasTypeHandler(parameter.getClass())) {
-								value = parameter;
-							} else if (countBoundSql.hasAdditionalParameter(propertyName)) {
-								value = countBoundSql.getAdditionalParameter(propertyName);
-							} else if (propertyName.startsWith(ForEachSqlNode.ITEM_PREFIX) && countBoundSql.hasAdditionalParameter(prop.getName())) {
-								value = countBoundSql.getAdditionalParameter(prop.getName());
-								if (value != null) {
-									value = configuration.newMetaObject(value).getValue(propertyName.substring(prop.getName().length()));
-								}
-							} else {
-								value = metaObject == null ? null : metaObject.getValue(propertyName);
-							}
-							TypeHandler typeHandler = parameterMapping.getTypeHandler();
-							if (typeHandler == null) {
-								throw new ExecutorException(
-										"There was no TypeHandler found for parameter " + propertyName + " of statement " + ms.getId());
-							}
-							typeHandler.setParameter(ps, i + 1, value, parameterMapping.getJdbcType());
-						}
-					}
-				}
-			}
-			int count = 0;
-			if ((rs = ps.executeQuery()).next()) {
-				count = rs.getInt(1);
-			}
-			return count;
-		} catch (Exception e) {
-			logger.error("!", e);
-			return -1;
-		} finally {
-			DbUtils.closeQuietly(rs);
-			DbUtils.closeQuietly(ps);
-		}
-	}
+    /** 执行手动设置的 count 查询 */
+    private static Long executeManualCount(Executor executor, MappedStatement countMs, Object parameter,
+            BoundSql boundSql, ResultHandler resultHandler) throws SQLException {
+        CacheKey countKey = executor.createCacheKey(countMs, parameter, RowBounds.DEFAULT, boundSql);
+        BoundSql countBoundSql = countMs.getBoundSql(parameter);
+        return ((Number) executor.query(countMs, parameter, RowBounds.DEFAULT, resultHandler, countKey, countBoundSql)
+                .get(0)).longValue();
+    }
+
+    /** 执行自动生成的 count 查询 */
+    private static Long executeAutoCount(Dialect dialect, Executor executor, MappedStatement countMs, Object parameter,
+            BoundSql boundSql, ResultHandler resultHandler)
+            throws SQLException, IllegalArgumentException, IllegalAccessException {
+
+        // 创建 count 查询的缓存 key
+        CacheKey countKey = executor.createCacheKey(countMs, parameter, RowBounds.DEFAULT, boundSql);
+
+        // 调用方言获取 COUNT SQL
+        String countSql = dialect.getCountSql(boundSql.getSql());
+
+        // 创建 Count BoundSql
+        BoundSql countBoundSql =
+                new BoundSql(countMs.getConfiguration(), countSql, boundSql.getParameterMappings(), parameter);
+
+        // 添加动态SQL，可能会产生的临时参数
+        for (Map.Entry<String, Object> entry : getAdditionalParameter(boundSql).entrySet()) {
+            countBoundSql.setAdditionalParameter(entry.getKey(), entry.getValue());
+        }
+
+        // 执行 count 查询
+        return ((Number) executor.query(countMs, parameter, RowBounds.DEFAULT, resultHandler, countKey, countBoundSql)
+                .get(0)).longValue();
+    }
+
+    /**
+     * 创建 COUNT映射语句处理对象
+     * @param ms
+     * @param newMsId
+     * @return COUNT映射语句处理对象
+     */
+    private static MappedStatement createCountMappedStatement(MappedStatement ms, String newMsId) {
+        MappedStatement.Builder builder =
+                new MappedStatement.Builder(ms.getConfiguration(), newMsId, ms.getSqlSource(), ms.getSqlCommandType());
+        builder.resource(ms.getResource());
+        builder.fetchSize(ms.getFetchSize());
+        builder.statementType(ms.getStatementType());
+        builder.keyGenerator(ms.getKeyGenerator());
+        if (ms.getKeyProperties() != null && ms.getKeyProperties().length != 0) {
+            StringBuilder keyProperties = new StringBuilder();
+            for (String keyProperty : ms.getKeyProperties()) {
+                keyProperties.append(keyProperty).append(",");
+            }
+            keyProperties.delete(keyProperties.length() - 1, keyProperties.length());
+            builder.keyProperty(keyProperties.toString());
+        }
+        builder.timeout(ms.getTimeout());
+        builder.parameterMap(ms.getParameterMap());
+        List<ResultMap> resultMaps = new ArrayList<ResultMap>();
+        ResultMap resultMap =
+                new ResultMap.Builder(ms.getConfiguration(), ms.getId(), Long.class, EMPTY_RESULTMAPPING).build();
+        resultMaps.add(resultMap);
+        builder.resultMaps(resultMaps);
+        builder.resultSetType(ms.getResultSetType());
+        builder.cache(ms.getCache());
+        builder.flushCacheRequired(ms.isFlushCacheRequired());
+        builder.useCache(ms.isUseCache());
+        return builder.build();
+    }
+
+    /**
+     * 获取 BoundSql 属性值 additionalParameters
+     * @param boundSql BoundSql
+     * @return additionalParameters属性
+     */
+    private static Map<String, Object> getAdditionalParameter(BoundSql boundSql)
+            throws IllegalArgumentException, IllegalAccessException {
+        return (Map<String, Object>) ADDITIONAL_PARAMETERS_FIELD.get(boundSql);
+    }
 }
-// Configuration.newStatementHandler

@@ -13,11 +13,10 @@ import org.springframework.jdbc.support.KeyHolder;
 
 import com.google.common.collect.Lists;
 
-import yyl.mvc.core.plug.jdbc.dialect.Dialect;
-import yyl.mvc.core.plug.jdbc.dialect.DialectConfigurer;
+import yyl.mvc.core.plug.jdbc.Dialect;
 import yyl.mvc.core.util.page.Page;
 import yyl.mvc.core.util.page.Pagination;
-import yyl.mvc.core.util.page.impl.SimplePage;
+
 
 /**
  * 基于JDBC的数据访问层支持工具类.<br>
@@ -71,20 +70,7 @@ public class JdbcDaoHelper {
 	public static <T> T queryOne(String sql, Object[] args, RowMapper<T> rowMapper, JdbcTemplate jdbcTemplate) {
 		return getSingleResult(jdbcTemplate.query(sql, args, rowMapper));
 	}
-
-	/**
-	 * 分页查询
-	 * @param sql 查询语句
-	 * @param args 查询参数
-	 * @param start 第一条记录索引
-	 * @param limit 每页显示记录数
-	 * @param rowMapper 行映射
-	 * @param jdbcTemplate JDBC模板
-	 * @return 分页查询結果
-	 */
-	public static <T> Page<T> pagedQuery(String sql, Object[] args, int start, int limit, RowMapper<T> rowMapper, JdbcTemplate jdbcTemplate) {
-		return pagedQuery(sql, args, start, limit, rowMapper, jdbcTemplate, getDialect());
-	}
+	 
 
 	/**
 	 * 分页查询
@@ -101,10 +87,10 @@ public class JdbcDaoHelper {
 			Dialect dialect) {
 		int count = jdbcTemplate.queryForObject(dialect.getCountSql(sql), args, Long.class).intValue();
 		if (count == 0) {
-			return new SimplePage<T>(start, limit, Lists.<T>newArrayList(), 0);
+			return new Page<T>(start, limit, Lists.<T>newArrayList(), 0);
 		}
 		List<T> records = jdbcTemplate.query(dialect.getLimitSql(sql, start, limit), args, rowMapper);
-		return new SimplePage<T>(start, limit, records, count);
+		return new Page<T>(start, limit, records, count);
 	}
 
 	/**
@@ -146,9 +132,5 @@ public class JdbcDaoHelper {
 
 	public static Object[] toArray(List<?> list) {
 		return (list == null || list.isEmpty()) ? new Object[0] : list.toArray(new Object[list.size()]);
-	}
-
-	private static Dialect getDialect() {
-		return DialectConfigurer.getDialect();
 	}
 }

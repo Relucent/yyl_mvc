@@ -1,24 +1,22 @@
 package yyl.mvc.test.mapper;
 
-import yyl.mvc.core.plug.mybatis.annotation.Mapper;
-import yyl.mvc.core.util.page.Page;
-import yyl.mvc.core.util.page.Pagination;
+import java.util.List;
+
+import yyl.mvc.core.plug.mybatis.annotation.MapperRepository;
 import yyl.mvc.test.model.Demo;
 
-@Mapper
+@MapperRepository
 public interface DemoMapper {
 
-	Long insert(Demo model);
+    Long insert(Demo model);
 
-	void update(Demo model);
+    void update(Demo model);
 
-	Demo getById(Long id);
+    Demo getById(Long id);
 
-	Demo getByName(String name);
+    Demo getByName(String name);
 
-	Page<Demo> getByPage(Pagination pagination);
+    List<Demo> find(Demo condition);
 
-	//# List<Demo> getByPage01(Demo conditions, RowBounds bounds);
-
-	//# PageList<Demo> getByPage02(Demo conditions, PageBounds bounds);
+    // # List<Demo> find(Demo condition, RowBounds bounds);
 }
