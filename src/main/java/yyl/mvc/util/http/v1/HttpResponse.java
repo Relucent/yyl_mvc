@@ -1,4 +1,4 @@
-package yyl.mvc.util.http;
+package yyl.mvc.util.http.v1;
 
 import java.nio.charset.Charset;
 

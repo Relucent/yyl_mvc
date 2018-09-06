@@ -122,9 +122,9 @@ public class FileUtil {
 			InputStream input = null;
 			try {
 				input = openInputStream(file);
-				IOUtil.copy(input, output);
+				IoUtil.copy(input, output);
 			} finally {
-				IOUtil.closeQuietly(input);
+				IoUtil.closeQuietly(input);
 			}
 		}
 

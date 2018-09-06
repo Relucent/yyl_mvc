@@ -9,9 +9,9 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.Charset;
 
-public class IOUtil {
+public class IoUtil {
 
-	private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
+	private static final int DEFAULT_BUFFER_SIZE = 0x10000; //65536
 
 	public static void copy(InputStream input, OutputStream output) throws IOException {
 		byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];

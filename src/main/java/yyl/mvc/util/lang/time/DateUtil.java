@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 
@@ -12,50 +13,40 @@ import java.util.Locale;
  */
 public class DateUtil {
 
+    /** ISO日期格式 */
+    public static final String ISO_DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
     /** 0001-01-01T00:00:00 */
     public static final Long MIN_MILLIS = -62135798400000L;
     /** 9999-12-31T23:59:59 */
     public static final Long MAX_MILLIS = 253402271999000L;
-    /** ISO日期格式 */
-    public static final String ISO_DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 
-    /** 日期格式化类线程变量(保证线程安全) */
-    private static final ThreadLocal<DateFormat> ISO_DATEFORMAT_HOLDER = new ThreadLocal<DateFormat>() {
+    /** 可解析的日期格式列表 */
+    private final static String[] PARSE_DATE_PATTERNS = Arrays.asList(//
+            ISO_DATETIME_FORMAT, //
+            "yyyy-MM-dd HH:mm:ss", //
+            "yyyy-MM-dd'T'HH:mm:ss.SSS", //
+            "EEE MMM dd HH:mm:ss zzz yyyy", //
+            "yyyy-MM-dd HH:mm:ss.SSS", //
+            "yyyy-MM-dd HH:mm", //
+            "yyyy-MM-dd HH", //
+            "yyyy-MM-dd", //
+            "yyyy-MM", //
+            "d MMM yyyy h:m a", // 30 Jun 2017 2:40 PM
+            "MMM d, yyyy HH:mm", //
+            "MMM d, yyyy", //
+            "MM/dd/yyyy", //
+            "yyyy"//
+    ).toArray(new String[0]);
+
+    /** DateFormat线程持有(保证线程安全) */
+    private static ThreadLocal<DateFormat> ISO_DATEFORMAT_HOLDER = new ThreadLocal<DateFormat>() {
         protected DateFormat initialValue() {
             return new SimpleDateFormat(ISO_DATETIME_FORMAT);
         };
     };
 
-    /** 可解析的日期格式列表 */
-    private final static String[] PARSE_DATE_PATTERNS = { //
-            "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", //
-            "yyyy-MM-dd'T'HH:mm:ss.SSS", //
-            "yyyy-MM-dd HH:mm:ss.SSS", //
-            "yyyy-MM-dd'T'HH:mm:ss'Z'", //
-            "yyyy-MM-dd'T'HH:mm:ss", //
-            "EEE MMM dd HH:mm:ss zzz yyyy", //
-            "yyyy-MM-dd HH:mm:ss", //
-            "yyyy/MM/dd HH:mm:ss", //
-            "yyyy-MM-dd'T'HH:mm", //
-            "yyyy-MM-dd HH:mm", //
-            "d MMM yyyy h:m a", //
-            "MMM d, yyyy HH:mm", //
-            "MMM d, yyyy", //
-            "yyyy-MM-dd HH", //
-            "yyyyMMddHHmmss", //
-            "yyyyMMdd", //
-            "yyyy-MM-dd", //
-            "yyyy/MM/dd", //
-            "yyyy-MM", //
-            "yyyyMM", //
-            "MM/dd/yyyy", //
-            "yyyy-MM-dd HH:mm 'BJT'", //
-            "MMM d yyyy", //
-            "yyyy"//
-    };
-
     /**
-     * 解析日期字符串
+     * 根据字符串解析日期
      * @param value 日期字符串
      * @return 日期对象
      */
@@ -66,45 +57,24 @@ public class DateUtil {
         try {
             return forceParseDate(value, Locale.ENGLISH);
         } catch (Exception e) {
-            // ignore
+            return null;
         }
-        return null;
     }
 
     /**
-     * 日期格式化
+     * 格式化日期对象
      * @param date 日期对象
-     * @return 日期字符串
+     * @return 日期对象字符串
      */
     public static String format(Date date) {
-        return date != null ? ISO_DATEFORMAT_HOLDER.get().format(date) : null;
-    }
-
-
-    /**
-     * 获得 Unix时间戳 (格林威治时间1970年01月01日00时00分00秒起至现在的总秒数)
-     * @param date 时间
-     * @return Unix时间戳
-     */
-    public static long getUnixTimestamp(Date date) {
-        return date.getTime() / 1000;
-    }
-
-    /**
-     * 根据Unix时间戳获得日期
-     * @param seconds Unix时间戳(相对于1970年的秒数)
-     * @return 日期对象
-     */
-    public static Date ofUnixTimestamp(long seconds) {
-        return new Date(seconds * 1000L);
-    }
-
-    public static Date max(Date a, Date b) {
-        return a.before(b) ? b : a; // a<b?b:a
-    }
-
-    public static Date min(Date a, Date b) {
-        return b.after(a) ? a : b; // b>a?a:b
+        if (date == null) {
+            return null;
+        }
+        try {
+            return ISO_DATEFORMAT_HOLDER.get().format(date);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /**
@@ -113,7 +83,7 @@ public class DateUtil {
      * @param unit 指定的单位类型
      * @return 指定时间指定周期的起始时间
      */
-    public static Date getStart(Date date, TimeField unit) {
+    public static Date getStart(Date date, DateUnit unit) {
         if (date == null) {
             return null;
         }
@@ -126,13 +96,42 @@ public class DateUtil {
      * @param unit 指定的单位类型
      * @return 指定时间指定周期的結束时间
      */
-    public static Date getEnd(Date date, TimeField unit) {
+    public static Date getEnd(Date date, DateUnit unit) {
         if (date == null) {
             return null;
         }
         return CalendarUtil.getEnd(CalendarUtil.toCalendar(date), unit).getTime();
     }
 
+    /**
+     * 返回给定日历给定周期类型字段的值。
+     * @param date 时间
+     * @param field 时间周期
+     * @return 所在季度(0-1)
+     */
+    public static int getFieldValue(Date date, DateUnit unit) {
+        return CalendarUtil.getFieldValue(CalendarUtil.toCalendar(date), unit);
+    }
+
+    /**
+     * 获得两个时间之中最大的时间
+     * @param a 第一个时间
+     * @param b 第二个时间
+     * @return 两个时间之中最大的时间
+     */
+    public static Date max(Date a, Date b) {
+        return a.before(b) ? b : a; // a<b?b:a
+    }
+
+    /**
+     * 获得两个时间之中最大的时间
+     * @param a 第一个时间
+     * @param b 第二个时间
+     * @return 两个时间之中最大的时间
+     */
+    public static Date min(Date a, Date b) {
+        return b.after(a) ? a : b; // b>a?a:b
+    }
 
     /**
      * 解析日期字符串
@@ -182,6 +181,4 @@ public class DateUtil {
         }
         throw new ParseException("Unable to parse the date: " + str, -1);
     }
-
-
 }

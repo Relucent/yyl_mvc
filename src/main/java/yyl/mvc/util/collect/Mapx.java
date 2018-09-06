@@ -14,94 +14,94 @@ import java.util.Set;
  * @version 2012-11-13
  */
 public interface Mapx extends Map<String, Object> {
-	// ===================================Methods=============================================
-	public int size();
+    //===================================Methods=============================================
+    public int size();
 
-	public boolean isEmpty();
+    public boolean isEmpty();
 
-	public boolean containsKey(Object key);
+    public boolean containsKey(Object key);
 
-	public boolean containsValue(Object value);
+    public boolean containsValue(Object value);
 
-	public Object get(String key);
+    public Object get(String key);
 
-	public Object put(String key, Object value);
+    public Object put(String key, Object value);
 
-	public Object remove(Object key);
+    public Object remove(Object key);
 
-	public void putAll(Map<? extends String, ? extends Object> m);
+    public void putAll(Map<? extends String, ? extends Object> m);
 
-	public void clear();
+    public void clear();
 
-	public Set<String> keySet();
+    public Set<String> keySet();
 
-	public Collection<Object> values();
+    public Collection<Object> values();
 
-	public Set<Entry<String, Object>> entrySet();
+    public Set<Entry<String, Object>> entrySet();
 
-	// ===================================Primitive===========================================
-	public boolean getPrimitiveBoolean(String key);
+    //===================================Primitive===========================================
+    public boolean getPrimitiveBoolean(String key);
 
-	public boolean getPrimitiveBoolean(String key, boolean defBoolean);
+    public boolean getPrimitiveBoolean(String key, boolean defBoolean);
 
-	public int getPrimitiveInt(String key);
+    public int getPrimitiveInt(String key);
 
-	public int getPrimitiveInt(String key, int defInt);
+    public int getPrimitiveInt(String key, int defInt);
 
-	public long getPrimitiveLong(String key);
+    public long getPrimitiveLong(String key);
 
-	public long getPrimitiveLong(String key, long defLong);
+    public long getPrimitiveLong(String key, long defLong);
 
-	public float getPrimitiveFloat(String key);
+    public float getPrimitiveFloat(String key);
 
-	public float getPrimitiveFloat(String key, float defFloat);
+    public float getPrimitiveFloat(String key, float defFloat);
 
-	public double getPrimitiveDouble(String key);
+    public double getPrimitiveDouble(String key);
 
-	public double getPrimitiveDouble(String key, double defDouble);
+    public double getPrimitiveDouble(String key, double defDouble);
 
-	// ===================================Wrapped=============================================
-	public Boolean getBoolean(String key);
+    //===================================Wrapped=============================================
+    public Boolean getBoolean(String key);
 
-	public Boolean getBoolean(String key, Boolean defBoolean);
+    public Boolean getBoolean(String key, Boolean defBoolean);
 
-	public Integer getInteger(String key);
+    public Integer getInteger(String key);
 
-	public Integer getInteger(String key, Integer defInteger);
+    public Integer getInteger(String key, Integer defInteger);
 
-	public Long getLong(String key);
+    public Long getLong(String key);
 
-	public Long getLong(String key, Long defLong);
+    public Long getLong(String key, Long defLong);
 
-	public Float getFloat(String key);
+    public Float getFloat(String key);
 
-	public Float getFloat(String key, Float defFloat);
+    public Float getFloat(String key, Float defFloat);
 
-	public Double getDouble(String key);
+    public Double getDouble(String key);
 
-	public Double getDouble(String key, Double defDouble);
+    public Double getDouble(String key, Double defDouble);
 
-	// ===================================General=============================================
-	public String getString(String key);
+    //===================================General=============================================
+    public String getString(String key);
 
-	public String getString(String key, String defString);
+    public String getString(String key, String defString);
 
-	public Date getDate(String key);
+    public Date getDate(String key);
 
-	public Date getDate(String key, Date defDate);
+    public Date getDate(String key, Date defDate);
 
-	public <T extends Enum<T>> T getEnum(String key, Class<T> enumType);
+    public <T extends Enum<T>> T getEnum(String key, Class<T> enumType);
 
-	public <T extends Enum<T>> T getEnum(String key, Class<T> enumType, T defEnum);
+    public <T extends Enum<T>> T getEnum(String key, Class<T> enumType, T defEnum);
 
-	// ===================================Collection==========================================
-	public Listx getList(String key);
+    //===================================Collection==========================================
+    public Listx getList(String key);
 
-	public Listx getList(String key, Listx va);
+    public Listx getList(String key, Listx va);
 
-	public Mapx getMap(String key);
+    public Mapx getMap(String key);
 
-	public Mapx getMap(String key, Mapx vo);
-
-	public Map<String, Object> toMap();
+    public Mapx getMap(String key, Mapx vo);
+    
+    public Map<String, Object> toMap();
 }
