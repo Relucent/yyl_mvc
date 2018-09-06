@@ -80,7 +80,7 @@ public class PaginationInterceptor implements Interceptor {
             MappedStatement ms = (MappedStatement) args[0];
             Object parameter = args[1];
             RowBounds rowBounds = (RowBounds) args[2];
-            ResultHandler resultHandler = (ResultHandler) args[3];
+            ResultHandler<?> resultHandler = (ResultHandler<?>) args[3];
 
             CacheKey cacheKey;
             BoundSql boundSql;
@@ -182,7 +182,7 @@ public class PaginationInterceptor implements Interceptor {
      * @return 总记录数
      */
     private Long obtainTotalCount(Dialect dialect, Executor executor, MappedStatement ms, Object parameter,
-            ResultHandler resultHandler, BoundSql boundSql)
+            ResultHandler<?> resultHandler, BoundSql boundSql)
             throws SQLException, IllegalArgumentException, IllegalAccessException {
         String countMsId = ms.getId() + COUNT_SUFFIX;
 
@@ -223,7 +223,7 @@ public class PaginationInterceptor implements Interceptor {
 
     /** 执行手动设置的 count 查询 */
     private static Long executeManualCount(Executor executor, MappedStatement countMs, Object parameter,
-            BoundSql boundSql, ResultHandler resultHandler) throws SQLException {
+            BoundSql boundSql, ResultHandler<?> resultHandler) throws SQLException {
         CacheKey countKey = executor.createCacheKey(countMs, parameter, RowBounds.DEFAULT, boundSql);
         BoundSql countBoundSql = countMs.getBoundSql(parameter);
         return ((Number) executor.query(countMs, parameter, RowBounds.DEFAULT, resultHandler, countKey, countBoundSql)
@@ -232,7 +232,7 @@ public class PaginationInterceptor implements Interceptor {
 
     /** 执行自动生成的 count 查询 */
     private static Long executeAutoCount(Dialect dialect, Executor executor, MappedStatement countMs, Object parameter,
-            BoundSql boundSql, ResultHandler resultHandler)
+            BoundSql boundSql, ResultHandler<?> resultHandler)
             throws SQLException, IllegalArgumentException, IllegalAccessException {
 
         // 创建 count 查询的缓存 key
