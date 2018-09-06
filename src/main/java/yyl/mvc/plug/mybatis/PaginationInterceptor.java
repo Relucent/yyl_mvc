@@ -122,7 +122,7 @@ public class PaginationInterceptor implements Interceptor {
                 }
 
                 // 根据分页条件对象创建分页对象
-                rowBounds = new RowBounds(pagination.getStart(), pagination.getLimit());
+                rowBounds = new RowBounds(pagination.getOffset(), pagination.getLimit());
             }
 
             // 判断是否需要进行分页查询

@@ -15,9 +15,11 @@ public class OracleDialect implements Dialect {
     }
 
     @Override
-    public String getLimitSql(String sql, int start, int limit) {
-        return " SELECT X___X.* FROM  ( SELECT ROWNUM as ROWNO___y, T__T.* FROM (" + sql + ") T__T WHERE ROWNUM<="
-                + (start + limit) + " ) X___X WHERE X___X.ROWNO___y > " + start + " ";
+    public String getLimitSql(String sql, int offset, int limit) {
+        return " SELECT X___X.* FROM  ( " //
+                + " SELECT ROWNUM as ROWNO___y, T__T.* FROM (" + sql + ") T__T  WHERE ROWNUM <=" + (offset + limit)
+                + " ) X___X " //
+                + " WHERE X___X.ROWNO___y > " + offset + " ";
     }
 
     @Override

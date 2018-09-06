@@ -15,8 +15,8 @@ public class HsqldbDialect implements Dialect {
     }
 
     @Override
-    public String getLimitSql(String sql, int start, int limit) {
-        return sql + " LIMIT " + start + " OFFSET " + limit;
+    public String getLimitSql(String sql, int offset, int limit) {
+        return sql + " LIMIT " + limit + " OFFSET " + offset;
     }
 
     @Override

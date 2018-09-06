@@ -16,12 +16,12 @@ public class InformixDialect implements Dialect {
 
     // SELECT SKIP M FIRST N FROM TABLENAME WHERE 1=1 ORDER BY COL;
     @Override
-    public String getLimitSql(String sql, int start, int limit) {
+    public String getLimitSql(String sql, int offset, int limit) {
         StringBuilder sqlBuilder = new StringBuilder(sql.length() + 40);
         sqlBuilder.append("SELECT ");
-        if (start > 0) {
+        if (offset > 0) {
             sqlBuilder.append(" SKIP ");
-            sqlBuilder.append(start);
+            sqlBuilder.append(offset);
         }
         if (limit > 0) {
             sqlBuilder.append(" FIRST ");

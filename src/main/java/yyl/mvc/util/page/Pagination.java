@@ -15,7 +15,7 @@ public class Pagination implements Serializable {
 
     // =================================Fields=================================================
     /** 开始查询 的数据索引号 (从0开始) */
-    private int start = 0;
+    private int offset = 0;
 
     /** 每页条数 */
     private int limit = DEFAULT_LIMIT;
@@ -30,29 +30,29 @@ public class Pagination implements Serializable {
 
     /**
      * 构造函数
-     * @param start 查询数据开始索引
+     * @param offset 查询数据开始索引
      * @param limit 查询记录数
      */
-    public Pagination(int start, int limit) {
-        this.start = start;
+    public Pagination(int offset, int limit) {
+        this.offset = offset;
         this.limit = limit;
     }
 
     // =================================Methods================================================
     /**
-     * 获取从第几条数据开始查询
+     * 获取查询的偏移量(从第几条数据开始查询)
      * @return 查询的偏移量
      */
-    public int getStart() {
-        return start;
+    public int getOffset() {
+        return offset;
     }
 
     /**
-     * 设置从第几条数据开始查询
-     * @param start 查询的偏移量
+     * 设置查询的偏移量(从第几条数据开始查询)
+     * @param offset 查询的偏移量
      */
-    public void setStart(int start) {
-        this.start = start;
+    public void setOffset(int offset) {
+        this.offset = offset;
     }
 
     /**
@@ -77,7 +77,7 @@ public class Pagination implements Serializable {
         final int prime = 31;
         int result = 1;
         result = prime * result + limit;
-        result = prime * result + start;
+        result = prime * result + offset;
         return result;
     }
 
@@ -90,6 +90,6 @@ public class Pagination implements Serializable {
             return false;
         }
         Pagination other = (Pagination) o;
-        return limit == other.limit && start == other.start;
+        return limit == other.limit && offset == other.offset;
     }
 }

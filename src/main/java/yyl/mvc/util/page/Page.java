@@ -14,7 +14,7 @@ public class Page<T> implements Serializable {
 
     // =================================Fields================================================
     /** 开始查询 的数据索引号 (从0开始) */
-    private int start = 0;
+    private int offset = 0;
     /** 每页条数 */
     private int limit = Pagination.DEFAULT_LIMIT;
     /** 总记录数 */
@@ -40,13 +40,13 @@ public class Page<T> implements Serializable {
 
     /**
      * 构造函数
-     * @param start 记录开始索引号
+     * @param offset 记录开始索引号
      * @param limit 页面最大记录数
      * @param records 当前页数据
      * @param total 总记录数
      */
-    public Page(int start, int limit, List<T> records, long total) {
-        this.start = start;
+    public Page(int offset, int limit, List<T> records, long total) {
+        this.offset = offset;
         this.limit = limit;
         this.records = records;
         this.total = total;
@@ -54,13 +54,13 @@ public class Page<T> implements Serializable {
 
     // =================================Methods================================================
     /** 获取从第几条数据开始查询 */
-    public int getStart() {
-        return start;
+    public int getOffset() {
+        return offset;
     }
 
     /** 设置从第几条数据开始查询 */
-    public void setStart(int start) {
-        this.start = start;
+    public void setOffset(int offset) {
+        this.offset = offset;
     }
 
     /** 获取每页显示条数 */
