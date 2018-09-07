@@ -1,6 +1,7 @@
 package yyl.mvc.util.tree;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -11,6 +12,9 @@ import java.util.Objects;
  * @author YYL
  */
 public class TreeUtil {
+
+    /** 默认的路径分隔符 */
+    public static final String ID_PATH_SEPARATOR = "/";
 
     /** 默认排序比较器(代表不排序) */
     private static final Comparator<?> NONE_COMPARATOR = new Comparator<Object>() {
@@ -32,7 +36,7 @@ public class TreeUtil {
      */
     @SuppressWarnings("unchecked")
     public static <T, N extends Node<N>, I> List<N> buildTree(I parentId, List<T> data, NodeAdapter<T, N> adapter,
-            NodeFilter<T> filter, NodeIdGetter<T, I> access) {
+            NodeFilter<T> filter, IdAccess<T, I> access) {
         return buildTree(parentId, data, adapter, filter, access, (Comparator<N>) NONE_COMPARATOR, 0);
     }
 
@@ -47,7 +51,7 @@ public class TreeUtil {
      * @return 树模型
      */
     public static <T, N extends Node<N>, I> List<N> buildTree(I parentId, List<T> data, NodeAdapter<T, N> adapter,
-            NodeFilter<T> filter, NodeIdGetter<T, I> access, Comparator<N> comparator) {
+            NodeFilter<T> filter, IdAccess<T, I> access, Comparator<N> comparator) {
         return buildTree(parentId, data, adapter, filter, access, comparator, 0);
     }
 
@@ -63,7 +67,7 @@ public class TreeUtil {
      * @return 树模型
      */
     private static <T, N extends Node<N>, I> List<N> buildTree(I parentId, List<T> data, NodeAdapter<T, N> adapter,
-            NodeFilter<T> filter, NodeIdGetter<T, I> access, Comparator<N> comparator, int depth) {
+            NodeFilter<T> filter, IdAccess<T, I> access, Comparator<N> comparator, int depth) {
         List<N> nodes = new ArrayList<>();
         for (T model : data) {
             if (Objects.equals(parentId, access.getParentId(model))) {
@@ -82,8 +86,27 @@ public class TreeUtil {
         return nodes;
     }
 
-    /** 节点ID获取器 */
-    public static interface NodeIdGetter<T, I> {
+    /**
+     * 递归设置 ID_PATH
+     * @param data 数据
+     * @param access ID获取器
+     * @param parentId 上级ID
+     * @param parentIdPath 上级ID路径
+     */
+    public static <T extends IdPathable, I> void recursiveSetIdPath(Collection<T> data, IdAccess<T, I> access,
+            I parentId, String parentIdPath) {
+        for (T model : data) {
+            if (Objects.equals(parentId, access.getParentId(model))) {
+                I id = access.getId(model);
+                String idPath = parentIdPath + id + ID_PATH_SEPARATOR;
+                model.setIdPath(idPath);
+                recursiveSetIdPath(data, access, id, idPath);
+            }
+        }
+    }
+
+    /** ID获取器 */
+    public static interface IdAccess<T, I> {
         /** 获得ID */
         I getId(T model);
 
