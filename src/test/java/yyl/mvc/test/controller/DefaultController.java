@@ -15,7 +15,7 @@ public class DefaultController {
 	private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
 
-	@RequestMapping(value = "/**.html")
+	@RequestMapping(value = "/**/**.html")
 	public String route(HttpServletRequest request, HttpServletResponse response) {
 		String path = extractPathWithinPattern(request);
 		return FilenameUtils.removeExtension(path);
