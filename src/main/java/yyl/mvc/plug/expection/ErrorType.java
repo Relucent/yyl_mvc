@@ -3,7 +3,7 @@ package yyl.mvc.plug.expection;
 /**
  * 异常类型
  */
-public enum ErrorCode {
+public enum ErrorType {
     /** 未知异常 */
     UNKNOWN,
     /** 提示 */

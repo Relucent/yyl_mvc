@@ -15,7 +15,7 @@ public class ExceptionHelper {
         if (cause instanceof GeneralException) {
             return (GeneralException) cause;
         }
-        return new GeneralException(ErrorCode.UNKNOWN, "#", cause);
+        return new GeneralException(ErrorType.UNKNOWN, "#", cause);
     }
 
     /**
@@ -25,7 +25,7 @@ public class ExceptionHelper {
      * @return 未捕获异常
      */
     public static GeneralException propagate(String message, Throwable cause) {
-        return new GeneralException(ErrorCode.UNKNOWN, message, cause);
+        return new GeneralException(ErrorType.UNKNOWN, message, cause);
     }
 
     /**
@@ -34,7 +34,7 @@ public class ExceptionHelper {
      * @return 提示类异常
      */
     public static GeneralException prompt(String message) {
-        return new GeneralException(ErrorCode.PROMPT, message);
+        return new GeneralException(ErrorType.PROMPT, message);
     }
 
 }

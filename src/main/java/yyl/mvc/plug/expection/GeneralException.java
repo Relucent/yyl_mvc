@@ -7,27 +7,25 @@ package yyl.mvc.plug.expection;
 @SuppressWarnings("serial")
 public class GeneralException extends RuntimeException {
     
-    private final ErrorCode code;
+    private final ErrorType type;
     private final String message;
 
-    public GeneralException(ErrorCode code, String message) {
+    public GeneralException(ErrorType type, String message) {
         super(message);
-        this.message = message;
-        this.code = code;
+        this.type = type;  this.message = message;
     }
 
-    public GeneralException(ErrorCode code, String message, Throwable cause) {
+    public GeneralException(ErrorType type, String message, Throwable cause) {
         super(message, cause);
-        this.message = message;
-        this.code = code;
+        this.type = type;  this.message = message;
     }
 
     public String getMessage() {
         return message;
     }
 
-    public ErrorCode getCode() {
-        return code;
+    public ErrorType getType() {
+        return type;
     }
 }
 
