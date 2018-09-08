@@ -1,10 +1,12 @@
 package yyl.mvc.util.web;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.FilenameUtils;
@@ -122,6 +124,25 @@ public class WebUtil {
     }
 
     /**
+     * 文件下载
+     * @param file 下载的文件
+     * @param request HTTP请求
+     * @param response HTTP响应
+     * @param mode 下载模式
+     */
+    public static void download(DownloadFile file, HttpServletRequest request, HttpServletResponse response,
+            DownloadMode mode) throws IOException {
+        String name = file.getName();
+        String contentType = file.getContentType();
+        String filename = WebUtil.getContentDispositionFilename(name, request);
+        String contentDisposition = mode.name() + ";filename=" + filename;
+        byte[] content = file.getContent();
+        response.setContentType(contentType);
+        response.setHeader("content-disposition", contentDisposition);
+        response.getOutputStream().write(content);
+    }
+
+    /**
      * 规范化路径
      * @param path 路径
      * @param replaceBackSlash 是否替换反斜杠(\)
@@ -184,5 +205,57 @@ public class WebUtil {
         uri = decodeRequestString(request, uri);
         int semicolonIndex = uri.indexOf(';');
         return ((semicolonIndex != -1) ? uri.substring(0, semicolonIndex) : uri);
+    }
+
+    /** 文件下载模式 */
+    public static enum DownloadMode {
+        /** 附件 */
+        attachment,
+        /** 内联 */
+        inline
+    }
+
+    /** 下载文件 */
+    public static class DownloadFile {
+        /** 文件名称 */
+        private String name;
+        /** 内容类型 */
+        private String contentType;
+        /** 文件内容 */
+        private byte[] content;
+        /** 文件长度 */
+        private long length;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getContentType() {
+            return contentType;
+        }
+
+        public void setContentType(String contentType) {
+            this.contentType = contentType;
+        }
+
+        public byte[] getContent() {
+            return content;
+        }
+
+        public void setContent(byte[] content) {
+            this.content = content;
+        }
+
+        public long getLength() {
+            return length;
+        }
+
+        public void setLength(long length) {
+            this.length = length;
+        }
     }
 }
