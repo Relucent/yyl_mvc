@@ -15,7 +15,7 @@ import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 
-import yyl.mvc.plug.expection.ErrorCode;
+import yyl.mvc.plug.expection.ErrorType;
 import yyl.mvc.plug.expection.GeneralException;
 import yyl.mvc.util.web.ControllerUtil;
 import yyl.mvc.util.web.WebUtil;
@@ -67,7 +67,7 @@ public class SpringMvcExceptionResolver extends SimpleMappingExceptionResolver i
      * @param ex 异常
      */
     protected void logException(Exception ex) {
-        if (ex instanceof GeneralException && ErrorCode.PROMPT.equals(((GeneralException) ex).getCode())) {
+        if (ex instanceof GeneralException && ErrorType.PROMPT.equals(((GeneralException) ex).getType())) {
             logger.warn(ex.toString());
         } else {
             logger.error("!", ex);
