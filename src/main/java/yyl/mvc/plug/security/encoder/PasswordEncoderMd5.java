@@ -1,8 +1,6 @@
-package yyl.mvc.plug.security.impl;
+package yyl.mvc.plug.security.encoder;
 
 import org.apache.commons.codec.digest.DigestUtils;
-
-import yyl.mvc.plug.security.PasswordEncoder;
 
 /**
  * 密码编码(加密)器实现类(MD5实现)

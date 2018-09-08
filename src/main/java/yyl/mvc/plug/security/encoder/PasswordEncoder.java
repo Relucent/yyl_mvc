@@ -1,4 +1,4 @@
-package yyl.mvc.plug.security;
+package yyl.mvc.plug.security.encoder;
 
 /**
  * 密码编码(加密)器

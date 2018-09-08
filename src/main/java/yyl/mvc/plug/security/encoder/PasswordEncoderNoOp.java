@@ -1,6 +1,4 @@
-package yyl.mvc.plug.security.impl;
-
-import yyl.mvc.plug.security.PasswordEncoder;
+package yyl.mvc.plug.security.encoder;
 
 /**
  * 密码编码(加密)器实现类(不进行加密操作)

@@ -1,4 +1,4 @@
-package yyl.mvc.plug.security.impl;
+package yyl.mvc.plug.security.encoder;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -6,7 +6,6 @@ import java.security.SecureRandom;
 
 import org.apache.commons.codec.binary.Hex;
 
-import yyl.mvc.plug.security.PasswordEncoder;
 import yyl.mvc.util.codec.Utf8;
 
 /**
