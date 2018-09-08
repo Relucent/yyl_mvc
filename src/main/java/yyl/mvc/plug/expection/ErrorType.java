@@ -4,12 +4,14 @@ package yyl.mvc.plug.expection;
  * 异常类型
  */
 public enum ErrorType {
-    /** 未知异常 */
+    /** 未知 */
     UNKNOWN,
     /** 提示 */
     PROMPT,
     /** 告警 */
     WARN,
+    /** 默认 */
+    DEFAULT,
     /** 业务异常 */
     BUSINESS,
     /** 访问频繁 */
