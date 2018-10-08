@@ -71,8 +71,7 @@ public class TreeUtil {
         List<N> nodes = new ArrayList<>();
         for (T model : data) {
             if (Objects.equals(parentId, access.getParentId(model))) {
-                List<N> children =
-                        buildTree(access.getParentId(model), data, adapter, filter, access, comparator, depth + 1);
+                List<N> children = buildTree(access.getId(model), data, adapter, filter, access, comparator, depth + 1);
                 if (filter.accept(model, depth, children.isEmpty())) {
                     N node = adapter.adapte(model);
                     node.setChildren(children);
