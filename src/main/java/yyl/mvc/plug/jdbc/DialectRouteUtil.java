@@ -6,10 +6,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import yyl.mvc.plug.jdbc.impl.Db2Dialect;
+import yyl.mvc.plug.jdbc.impl.GreenPlumDialect;
 import yyl.mvc.plug.jdbc.impl.HsqldbDialect;
 import yyl.mvc.plug.jdbc.impl.InformixDialect;
 import yyl.mvc.plug.jdbc.impl.MySqlDialect;
 import yyl.mvc.plug.jdbc.impl.OracleDialect;
+import yyl.mvc.plug.jdbc.impl.PostgreSqlDialect;
 
 /**
  * 数据库方言路由工具类
@@ -24,8 +26,10 @@ public class DialectRouteUtil {
         // HSQLDB
         DIALECT_ALIAS_MAP.put("hsqldb", HsqldbDialect.class);
         DIALECT_ALIAS_MAP.put("h2", HsqldbDialect.class);
-        DIALECT_ALIAS_MAP.put("postgresql", HsqldbDialect.class);
         DIALECT_ALIAS_MAP.put("phoenix", HsqldbDialect.class);
+        DIALECT_ALIAS_MAP.put("postgresql", PostgreSqlDialect.class);
+        DIALECT_ALIAS_MAP.put("greenplum", GreenPlumDialect.class);
+
         // MYSQL
         DIALECT_ALIAS_MAP.put("mysql", MySqlDialect.class);
         DIALECT_ALIAS_MAP.put("mariadb", MySqlDialect.class);
