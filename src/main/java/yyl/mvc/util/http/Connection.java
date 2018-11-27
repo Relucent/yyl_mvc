@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
@@ -147,12 +148,44 @@ public class Connection {
     }
 
     /**
+     * Set the request timeouts (connect). A timeout of zero is treated as an infinite timeout.
+     * @param millis number of milliseconds (thousandths of a second) before timing out connects or reads.
+     * @return this Connection, for chaining
+     */
+    public Connection connectTimeoutMillis(int millis) {
+        request.connectTimeoutMillis(millis);
+        return this;
+    }
+
+    /**
+     * Set the request timeouts (connect). A timeout of zero is treated as an infinite timeout.
+     * @param duration the duration
+     * @param unit time unit
+     * @return this Connection, for chaining
+     */
+    public Connection connectTimeout(int duration, TimeUnit unit) {
+        request.connectTimeoutMillis((int) unit.toMillis(duration));
+        return this;
+    }
+
+    /**
      * Set the request timeouts (connect and read). A timeout of zero is treated as an infinite timeout.
      * @param millis number of milliseconds (thousandths of a second) before timing out connects or reads.
      * @return this Connection, for chaining
      */
-    public Connection timeout(int millis) {
-        request.timeout(millis);
+    public Connection readTimeoutMillis(int millis) {
+        request.readTimeoutMillis(millis);
+        return this;
+    }
+
+    /**
+     * Set the request timeouts (connect). A timeout of zero is treated as an infinite timeout.
+     * @param duration the duration
+     * @param unit time unit
+     * @return this Connection, for chaining
+     */
+    public Connection readTimeout(int duration, TimeUnit unit) {
+        request.readTimeoutMillis((int) unit.toMillis(duration));
         return this;
     }
 
@@ -605,7 +638,8 @@ public class Connection {
      */
     public static class Request extends Base<Request> {
         private Proxy proxy; // nullable
-        private int timeoutMilliseconds;
+        private int connectTimeoutMillis;// milliseconds
+        private int readTimeoutMillis;// milliseconds
         private int maxBodySizeBytes;
         private boolean followRedirects;
         private Collection<KeyVal> data;
@@ -616,7 +650,8 @@ public class Connection {
         private String postDataCharset = DataUtil.DEFAULT_CHARSET;
 
         private Request() {
-            timeoutMilliseconds = 3000;
+            connectTimeoutMillis = 3000;
+            readTimeoutMillis = 30000;
             maxBodySizeBytes = 1024 * 1024; // 1MB
             followRedirects = true;
             data = new ArrayList<KeyVal>();
@@ -657,8 +692,8 @@ public class Connection {
          * Get the request timeout, in milliseconds.
          * @return the timeout in milliseconds.
          */
-        public int timeout() {
-            return timeoutMilliseconds;
+        public int connectTimeoutMillis() {
+            return connectTimeoutMillis;
         }
 
         /**
@@ -666,9 +701,28 @@ public class Connection {
          * @param millis timeout, in milliseconds
          * @return this Request, for chaining
          */
-        public Request timeout(int millis) {
+        public Request connectTimeoutMillis(int millis) {
             Assert.isTrue(millis >= 0, "Timeout milliseconds must be 0 (infinite) or greater");
-            timeoutMilliseconds = millis;
+            connectTimeoutMillis = millis;
+            return this;
+        }
+
+        /**
+         * Get the request timeout, in milliseconds.
+         * @return the timeout in milliseconds.
+         */
+        public int readTimeoutMillis() {
+            return readTimeoutMillis;
+        }
+
+        /**
+         * Update the request timeout.
+         * @param millis timeout, in milliseconds
+         * @return this Request, for chaining
+         */
+        public Request readTimeoutMillis(int millis) {
+            Assert.isTrue(millis >= 0, "Timeout milliseconds must be 0 (infinite) or greater");
+            readTimeoutMillis = millis;
             return this;
         }
 
@@ -1021,8 +1075,8 @@ public class Connection {
 
             conn.setRequestMethod(req.method().name());
             conn.setInstanceFollowRedirects(false); // don't rely on native redirection support
-            conn.setConnectTimeout(req.timeout());
-            conn.setReadTimeout(req.timeout());
+            conn.setConnectTimeout(req.connectTimeoutMillis());
+            conn.setReadTimeout(req.readTimeoutMillis());
 
             if (conn instanceof HttpsURLConnection) {
                 if (!req.validateTLSCertificates()) {
