@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import yyl.mvc.util.collect.Mapx;
-import yyl.mvc.util.collect.Mapxs;
 import yyl.mvc.util.json.JsonUtil;
 
 /**
@@ -34,7 +33,7 @@ public class ControllerUtil {
 	 * @return 请求的参数
 	 */
 	public static Mapx parameters(HttpServletRequest request) {
-		Mapx params = Mapxs.newMapx();
+		Mapx params = new Mapx();
 		for (Enumeration<String> en = request.getParameterNames(); en.hasMoreElements();) {
 			String name = en.nextElement();
 			String value = request.getParameter(name);
@@ -135,7 +134,7 @@ public class ControllerUtil {
 	 * @return 包装后的结果
 	 */
 	protected static Mapx wrapException(Throwable e) {
-		Mapx error = Mapxs.newMapx();
+		Mapx error = new Mapx();
 		String message = e.getMessage();
 		if (message == null) {
 			message = e.toString();

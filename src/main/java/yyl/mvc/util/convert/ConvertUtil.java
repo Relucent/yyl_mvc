@@ -12,8 +12,8 @@ import yyl.mvc.util.convert.support.BooleanConverter;
 import yyl.mvc.util.convert.support.CharacterConverter;
 import yyl.mvc.util.convert.support.DateConverter;
 import yyl.mvc.util.convert.support.EnumConverter;
-import yyl.mvc.util.convert.support.ListxConverter;
-import yyl.mvc.util.convert.support.MapxConverter;
+import yyl.mvc.util.convert.support.ListConverter;
+import yyl.mvc.util.convert.support.MapConverter;
 import yyl.mvc.util.convert.support.NumberConverter;
 import yyl.mvc.util.convert.support.StringConverter;
 
@@ -52,8 +52,8 @@ public class ConvertUtil {
 		// 字符串/日期/集合 类型
 		CONVERTERS.put(String.class, StringConverter.INSTANCE);
 		CONVERTERS.put(Date.class, DateConverter.INSTANCE);
-		CONVERTERS.put(Mapx.class, MapxConverter.INSTANCE);
-		CONVERTERS.put(Listx.class, ListxConverter.INSTANCE);
+		CONVERTERS.put(Mapx.class, MapConverter.INSTANCE);
+		CONVERTERS.put(Listx.class, ListConverter.INSTANCE);
 	}
 
 	/** 原始类型的封装类型列表* */

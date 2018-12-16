@@ -9,9 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import yyl.mvc.util.collect.Listx;
-import yyl.mvc.util.collect.Listxs;
 import yyl.mvc.util.collect.Mapx;
-import yyl.mvc.util.collect.Mapxs;
 
 /**
  * JSON解析器
@@ -289,7 +287,7 @@ class JsonTokener {
      * @return MAP对象
      */
     protected Mapx nextMap() {
-        Mapx map = Mapxs.newMapx();
+        Mapx map = new Mapx();
 
         char c;
         String key;
@@ -343,7 +341,7 @@ class JsonTokener {
      */
     protected Listx nextList() {
 
-        Listx list = Listxs.newListx();
+        Listx list = new Listx();
 
         char c = nextClean();
         char q;

@@ -15,9 +15,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
 
 import yyl.mvc.util.collect.Listx;
-import yyl.mvc.util.collect.Listxs;
 import yyl.mvc.util.collect.Mapx;
-import yyl.mvc.util.collect.Mapxs;
 
 /**
  * 类型转换工具类
@@ -62,7 +60,7 @@ public class TreeNodeConverts {
 
     // 将ObjectNode转化为Mapx
     private static Mapx toMapx(ObjectNode node) {
-        Mapx map = Mapxs.newMapx();
+        Mapx map = new Mapx();
         for (Iterator<Map.Entry<String, JsonNode>> it = node.fields(); it.hasNext();) {
             Map.Entry<String, JsonNode> entry = it.next();
             String key = entry.getKey();
@@ -74,7 +72,7 @@ public class TreeNodeConverts {
 
     // 将ArrayNode转化为Listx
     private static Listx toListx(ArrayNode node) {
-        Listx list = Listxs.newListx();
+        Listx list = new Listx();
         for (int i = 0, I = node.size(); i < I; i++) {
             list.add(toBasicValue(node.get(i)));
         }

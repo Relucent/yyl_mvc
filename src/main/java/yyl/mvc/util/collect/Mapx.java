@@ -1,107 +1,94 @@
 package yyl.mvc.util.collect;
 
-import java.util.Collection;
 import java.util.Date;
-import java.util.Map;
-import java.util.Set;
+import java.util.LinkedHashMap;
+
+import yyl.mvc.util.convert.ConvertUtil;
 
 /**
- * 增强的Map接口<br>
- * 这个接口继承自Map，但是获得值的时候提供了一些类型转换方法<br>
- * 该类作为数据传输对象使用十分方便<br>
- * @see java.util.Map
- * @author YaoYiLang
- * @version 2012-11-13
+ * 增强版Map接口的实现类。<br>
+ * @author YYL
  */
-public interface Mapx extends Map<String, Object> {
-    //===================================Methods=============================================
-    public int size();
+@SuppressWarnings("serial")
+public class Mapx extends LinkedHashMap<String, Object> {
 
-    public boolean isEmpty();
+    public Boolean getBoolean(String key) {
+        return getBoolean(key, null);
+    }
 
-    public boolean containsKey(Object key);
+    public Integer getInteger(String key) {
+        return getInteger(key, null);
+    }
 
-    public boolean containsValue(Object value);
+    public Long getLong(String key) {
+        return getLong(key, null);
+    }
 
-    public Object get(String key);
+    public Float getFloat(String key) {
+        return getFloat(key, null);
+    }
 
-    public Object put(String key, Object value);
+    public Double getDouble(String key) {
+        return getDouble(key, null);
+    }
 
-    public Object remove(Object key);
+    public String getString(String key) {
+        return getString(key, null);
+    }
 
-    public void putAll(Map<? extends String, ? extends Object> m);
+    public Date getDate(String key) {
+        return getDate(key, null);
+    }
 
-    public void clear();
+    public <T extends Enum<T>> T getEnum(String key, Class<T> enumType) {
+        return getEnum(key, enumType, null);
+    }
 
-    public Set<String> keySet();
+    public Mapx getMap(String key) {
+        return getMap(key, null);
+    }
 
-    public Collection<Object> values();
+    public Listx getList(String key) {
+        return getList(key, null);
+    }
 
-    public Set<Entry<String, Object>> entrySet();
+    public Boolean getBoolean(String key, Boolean defaultValue) {
+        return ConvertUtil.toBoolean(get(key), defaultValue);
+    }
 
-    //===================================Primitive===========================================
-    public boolean getPrimitiveBoolean(String key);
+    public Integer getInteger(String key, Integer defaultValue) {
+        return ConvertUtil.toInteger(get(key), defaultValue);
+    }
 
-    public boolean getPrimitiveBoolean(String key, boolean defBoolean);
+    public Long getLong(String key, Long defaultValue) {
+        return ConvertUtil.toLong(get(key), defaultValue);
+    }
 
-    public int getPrimitiveInt(String key);
+    public Float getFloat(String key, Float defaultValue) {
+        return ConvertUtil.toFloat(get(key), defaultValue);
+    }
 
-    public int getPrimitiveInt(String key, int defInt);
+    public Double getDouble(String key, Double defaultValue) {
+        return ConvertUtil.toDouble(get(key), defaultValue);
+    }
 
-    public long getPrimitiveLong(String key);
+    public String getString(String key, String defaultValue) {
+        return ConvertUtil.toString(get(key), defaultValue);
+    }
 
-    public long getPrimitiveLong(String key, long defLong);
+    public Date getDate(String key, Date defaultValue) {
+        return ConvertUtil.toDate(get(key), defaultValue);
+    }
 
-    public float getPrimitiveFloat(String key);
+    public <T extends Enum<T>> T getEnum(String key, Class<T> enumType, T defaultValue) {
+        return ConvertUtil.toEnum(get(key), enumType, defaultValue);
+    }
 
-    public float getPrimitiveFloat(String key, float defFloat);
+    public Mapx getMap(String key, Mapx defaultValue) {
+        return ConvertUtil.toMap(get(key), defaultValue);
+    }
 
-    public double getPrimitiveDouble(String key);
-
-    public double getPrimitiveDouble(String key, double defDouble);
-
-    //===================================Wrapped=============================================
-    public Boolean getBoolean(String key);
-
-    public Boolean getBoolean(String key, Boolean defBoolean);
-
-    public Integer getInteger(String key);
-
-    public Integer getInteger(String key, Integer defInteger);
-
-    public Long getLong(String key);
-
-    public Long getLong(String key, Long defLong);
-
-    public Float getFloat(String key);
-
-    public Float getFloat(String key, Float defFloat);
-
-    public Double getDouble(String key);
-
-    public Double getDouble(String key, Double defDouble);
-
-    //===================================General=============================================
-    public String getString(String key);
-
-    public String getString(String key, String defString);
-
-    public Date getDate(String key);
-
-    public Date getDate(String key, Date defDate);
-
-    public <T extends Enum<T>> T getEnum(String key, Class<T> enumType);
-
-    public <T extends Enum<T>> T getEnum(String key, Class<T> enumType, T defEnum);
-
-    //===================================Collection==========================================
-    public Listx getList(String key);
-
-    public Listx getList(String key, Listx va);
-
-    public Mapx getMap(String key);
-
-    public Mapx getMap(String key, Mapx vo);
-    
-    public Map<String, Object> toMap();
+    public Listx getList(String key, Listx defaultValue) {
+        return ConvertUtil.toList(get(key), defaultValue);
+    }
 }

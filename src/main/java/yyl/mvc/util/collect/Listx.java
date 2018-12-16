@@ -1,128 +1,127 @@
 package yyl.mvc.util.collect;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
+
+import yyl.mvc.util.convert.ConvertUtil;
 
 /**
- * 增强的List接口<br>
- * 这个接口继承自List，但是获得值的时候提供了一些类型转换方法<br>
- * 该类作为数据传输对象使用十分方便<br>
- * @see java.util.List
- * @author YaoYiLang
- * @version 2012-11-13
+ * 增强版List接口的实现类。<br>
  */
-public interface Listx extends List<Object> {
-    //===================================Methods=============================================
-    public int size();
+@SuppressWarnings("serial")
+public class Listx extends ArrayList<Object> {
 
-    public boolean isEmpty();
+    @Override
+    public void add(int index, Object element) {
+        if (index < size()) {
+            super.add(index, element);
+        } else {
+            while (index != size()) {
+                super.add((Object) null);
+            }
+            super.add(element);
+        }
+    }
 
-    public boolean contains(Object o);
 
-    public Iterator<Object> iterator();
+    @Override
+    public Object set(int index, Object element) {
+        if (index < size()) {
+            return super.set(index, element);
+        } else {
+            while (index != size()) {
+                super.add((Object) null);
+            }
+            super.add(element);
+            return null;
+        }
+    }
 
-    public Object[] toArray();
+    @Override
+    public List<Object> subList(int fromIndex, int toIndex) {
+        Listx result = new Listx();
+        result.addAll(super.subList(fromIndex, toIndex));
+        return result;
+    }
 
-    public <T> T[] toArray(T[] a);
+    public Boolean getBoolean(int index) {
+        return getBoolean(index, null);
+    }
 
-    public boolean add(Object e);
+    public Integer getInteger(int index) {
+        return getInteger(index, null);
+    }
 
-    public boolean remove(Object o);
+    public Long getLong(int index) {
+        return getLong(index, null);
+    }
 
-    public boolean containsAll(Collection<?> c);
+    public Float getFloat(int index) {
+        return getFloat(index, null);
+    }
 
-    public boolean addAll(Collection<? extends Object> c);
+    public Double getDouble(int index) {
+        return getDouble(index, null);
+    }
 
-    public boolean addAll(int index, Collection<? extends Object> c);
+    public Date getDate(int index) {
+        return getDate(index, null);
+    }
 
-    public boolean removeAll(Collection<?> c);
+    public String getString(int index) {
+        return getString(index, null);
+    }
 
-    public boolean retainAll(Collection<?> c);
+    public <T extends Enum<T>> T getEnum(int index, Class<T> enumType) {
+        return getEnum(index, enumType, null);
+    }
 
-    public void clear();
+    public Mapx getMap(int index) {
+        return getMap(index, null);
+    }
 
-    public Object get(int index);
+    public Listx getList(int index) {
+        return getList(index, null);
+    }
 
-    public Object set(int index, Object element);
+    public Boolean getBoolean(int index, Boolean defaultValue) {
+        return ConvertUtil.toBoolean(get(index), defaultValue);
+    }
 
-    public void add(int index, Object element);
+    public Integer getInteger(int index, Integer defaultValue) {
+        return ConvertUtil.toInteger(get(index), defaultValue);
+    }
 
-    public Object remove(int index);
+    public Long getLong(int index, Long defaultValue) {
+        return ConvertUtil.toLong(get(index), defaultValue);
+    }
 
-    public int indexOf(Object o);
+    public Float getFloat(int index, Float defaultValue) {
+        return ConvertUtil.toFloat(get(index), defaultValue);
+    }
 
-    public int lastIndexOf(Object o);
+    public Double getDouble(int index, Double defaultValue) {
+        return ConvertUtil.toDouble(get(index), defaultValue);
+    }
 
-    public ListIterator<Object> listIterator();
+    public String getString(int index, String defaultValue) {
+        return ConvertUtil.toString(get(index), defaultValue);
+    }
 
-    public ListIterator<Object> listIterator(int index);
+    public Date getDate(int index, Date defaultValue) {
+        return ConvertUtil.toDate(get(index), defaultValue);
+    }
 
-    public List<Object> subList(int fromIndex, int toIndex);
+    public <T extends Enum<T>> T getEnum(int index, Class<T> enumType, T defaultEnum) {
+        return ConvertUtil.toEnum(get(index), enumType, defaultEnum);
+    }
 
-    //===================================Primitive===========================================
-    public boolean getPrimitiveBoolean(int index);
+    public Mapx getMap(int index, Mapx defaultValue) {
+        return ConvertUtil.toMap(get(index), defaultValue);
+    }
 
-    public boolean getPrimitiveBoolean(int index, boolean defaultBoolean);
-
-    public int getPrimitiveInt(int index);
-
-    public int getPrimitiveInt(int index, int defaultInt);
-
-    public long getPrimitiveLong(int index);
-
-    public long getPrimitiveLong(int index, long defaultLong);
-
-    public float getPrimitiveFloat(int index);
-
-    public float getPrimitiveFloat(int index, float defaultFloat);
-
-    public double getPrimitiveDouble(int index);
-
-    public double getPrimitiveDouble(int index, double defaultDouble);
-
-    //===================================Wrapped=============================================
-    public Boolean getBoolean(int index, Boolean defBoolean);
-
-    public Boolean getBoolean(int index);
-
-    public Integer getInteger(int index);
-
-    public Integer getInteger(int index, Integer defInteger);
-
-    public Long getLong(int index);
-
-    public Long getLong(int index, Long defLong);
-
-    public Float getFloat(int index);
-
-    public Float getFloat(int index, Float defFloat);
-
-    public Double getDouble(int index);
-
-    public Double getDouble(int index, Double defDouble);
-
-    //===================================General=============================================
-    public String getString(int index);
-
-    public String getString(int index, String defString);
-
-    public Date getDate(int index);
-
-    public Date getDate(int index, Date defDate);
-
-    public <T extends Enum<T>> T getEnum(int index, Class<T> enumType);
-
-    public <T extends Enum<T>> T getEnum(int index, Class<T> enumType, T defEnum);
-
-    //===================================Collection==========================================
-    public Listx getList(int index);
-
-    public Listx getList(int index, Listx va);
-
-    public Mapx getMap(int index);
-
-    public Mapx getMap(int index, Mapx vo);
+    public Listx getList(int index, Listx defaultValue) {
+        return ConvertUtil.toList(get(index), defaultValue);
+    }
 }

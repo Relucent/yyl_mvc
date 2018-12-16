@@ -12,6 +12,23 @@ import java.nio.charset.Charset;
 public class IoUtil {
 
 	private static final int DEFAULT_BUFFER_SIZE = 0x10000; //65536
+	
+	 /**
+     * 将文本写入到输出流中
+     * @param text 文本
+     * @param output 输出流中
+     * @param encoding 字符编码
+     * @return 写入的字节数
+     */
+    public static int write(String text, OutputStream output, Charset encoding) throws IOException {
+        int length = 0;
+        if (text != null) {
+            byte[] data = text.getBytes(encoding);
+            length = data.length;
+            output.write(data);
+        }
+        return length;
+    }
 
 	public static void copy(InputStream input, OutputStream output) throws IOException {
 		byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];

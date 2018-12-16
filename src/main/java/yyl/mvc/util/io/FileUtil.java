@@ -14,8 +14,17 @@ import java.util.zip.ZipOutputStream;
  */
 public class FileUtil {
 
-	/** 默认的路径分隔符 */
-	public static final String SEPARATOR = "/";
+    // ===================================Fields==============================================
+    /** 文件分隔符 */
+    public static final String FILE_SEPARATOR = "/";
+    /** 1KB */
+    public static final long ONE_KB = 1024L;
+    /** 1MB */
+    public static final long ONE_MB = ONE_KB * ONE_KB;
+    /** 1GB */
+    public static final long ONE_GB = ONE_KB * ONE_MB;
+
+    // ===================================Methods=============================================
 
 	/**
 	 * 获得文件相对路径
