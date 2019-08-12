@@ -1,7 +1,0 @@
-/ = anon
-/s/** = anon
-/assets/** = anon
-/admin/login** = anon
-/admin/logout** = anon
-/admin/** = authc
-/** = anon
