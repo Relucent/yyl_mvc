@@ -1,17 +1,17 @@
-package yyl.mvc.plug.jdbc;
+package yyl.mvc.util.jdbc;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import yyl.mvc.plug.jdbc.impl.Db2Dialect;
-import yyl.mvc.plug.jdbc.impl.GreenPlumDialect;
-import yyl.mvc.plug.jdbc.impl.HsqldbDialect;
-import yyl.mvc.plug.jdbc.impl.InformixDialect;
-import yyl.mvc.plug.jdbc.impl.MySqlDialect;
-import yyl.mvc.plug.jdbc.impl.OracleDialect;
-import yyl.mvc.plug.jdbc.impl.PostgreSqlDialect;
+import yyl.mvc.util.jdbc.impl.Db2Dialect;
+import yyl.mvc.util.jdbc.impl.GreenPlumDialect;
+import yyl.mvc.util.jdbc.impl.HsqldbDialect;
+import yyl.mvc.util.jdbc.impl.InformixDialect;
+import yyl.mvc.util.jdbc.impl.MySqlDialect;
+import yyl.mvc.util.jdbc.impl.OracleDialect;
+import yyl.mvc.util.jdbc.impl.PostgreSqlDialect;
 
 /**
  * 数据库方言路由工具类

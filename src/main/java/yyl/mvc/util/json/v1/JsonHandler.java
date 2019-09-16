@@ -1,29 +1,41 @@
 package yyl.mvc.util.json.v1;
 
+import java.util.Map;
+
+import yyl.mvc.util.bean.BeanUtil;
 import yyl.mvc.util.collect.Listx;
 import yyl.mvc.util.collect.Mapx;
 
-public class JsonUtil {
 
+public class JsonHandler implements yyl.mvc.util.json.JsonHandler {
+
+    public static final JsonHandler INSTANCE = new JsonHandler();
     private static JsonEncoder encoder = new JsonEncoder();
     private static JsonDecoder decoder = new JsonDecoder();
 
     /**
      * 将Java对象转化为JSON字符串
-     * @param obj java对象
+     * @param object java对象
      * @return JSON字符串
      */
-    public static String encode(Object object) {
+    public String encode(Object object) {
         return encoder.encode(object);
     }
 
     /**
      * 将JSON字符串转化为Java对象
      * @param json JSON字符串
+     * @param type 转化的对象类型
      * @return Java对象
      */
-    public static Object decode(String json) {
-        return decoder.decode(json);
+    @Override
+    public <T> T decode(String json, Class<T> type) {
+        try {
+            Map<String, Object> properties = toMap(json);
+            return BeanUtil.newBean(type, properties);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /**
@@ -31,7 +43,7 @@ public class JsonUtil {
      * @param json JSON字符串
      * @return MAP对象,如果解析失败返回null
      */
-    public static Mapx toMap(String json) {
+    public Mapx toMap(String json) {
         return decoder.toMap(json);
     }
 
@@ -40,7 +52,7 @@ public class JsonUtil {
      * @param json LIST字符串
      * @return LIST对象,如果解析失败返回null
      */
-    public static Listx toList(String json) {
+    public Listx toList(String json) {
         return decoder.toList(json);
     }
 }

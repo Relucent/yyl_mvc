@@ -11,11 +11,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.alibaba.druid.pool.DruidDataSource;
 
-import yyl.mvc.plug.jdbc.Dialect;
-import yyl.mvc.plug.jdbc.impl.Db2Dialect;
-import yyl.mvc.plug.jdbc.impl.MySqlDialect;
-import yyl.mvc.plug.jdbc.impl.OracleDialect;
-import yyl.mvc.plug.jdbc.impl.PostgreSqlDialect;
+import yyl.mvc.util.jdbc.Dialect;
+import yyl.mvc.util.jdbc.impl.Db2Dialect;
+import yyl.mvc.util.jdbc.impl.MySqlDialect;
+import yyl.mvc.util.jdbc.impl.OracleDialect;
+import yyl.mvc.util.jdbc.impl.PostgreSqlDialect;
 
 // @Configuration
 public class JdbcDruidConfiguration {

@@ -1,4 +1,4 @@
-package yyl.mvc.plug.json;
+package yyl.mvc.plug.jackson;
 
 import java.util.Date;
 
@@ -8,11 +8,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
-import yyl.mvc.plug.json.databind.DatePowerDeserializer;
-import yyl.mvc.plug.json.databind.DatePowerSerializer;
-import yyl.mvc.plug.json.databind.ListxDeserializer;
-import yyl.mvc.plug.json.databind.MapxDeserializer;
-import yyl.mvc.plug.json.databind.StringUnicodeSerializer;
+import yyl.mvc.plug.jackson.databind.DatePowerDeserializer;
+import yyl.mvc.plug.jackson.databind.DatePowerSerializer;
+import yyl.mvc.plug.jackson.databind.ListxDeserializer;
+import yyl.mvc.plug.jackson.databind.MapxDeserializer;
+import yyl.mvc.plug.jackson.databind.StringUnicodeSerializer;
 import yyl.mvc.util.collect.Listx;
 import yyl.mvc.util.collect.Mapx;
 

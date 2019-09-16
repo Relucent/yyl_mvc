@@ -8,6 +8,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import yyl.mvc.util.convert.ConvertUtil;
 import yyl.mvc.util.page.Pagination;
+import yyl.mvc.util.page.SimplePagination;
 
 /**
  * 分页视图适配器<br>
@@ -31,7 +32,7 @@ public class PaginationMethodArgumentResolver implements HandlerMethodArgumentRe
             NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         int start = ConvertUtil.toInteger(webRequest.getParameter(START_KEY), 0);
         int limit = ConvertUtil.toInteger(webRequest.getParameter(LIMIT_KEY), DEFAULT_LIMIT);
-        return new Pagination(start, limit);
+        return new SimplePagination(start, limit);
     }
 
 }

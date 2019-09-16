@@ -1,4 +1,4 @@
-package yyl.mvc.plug.json.databind;
+package yyl.mvc.plug.jackson.databind;
 
 import java.io.IOException;
 import java.util.Date;

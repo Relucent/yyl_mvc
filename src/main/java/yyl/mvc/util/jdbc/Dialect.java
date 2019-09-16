@@ -1,4 +1,4 @@
-package yyl.mvc.plug.jdbc;
+package yyl.mvc.util.jdbc;
 
 /**
  * JDBC查询方言接口，主要用于提供分页查询<br>

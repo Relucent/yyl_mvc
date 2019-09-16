@@ -3,93 +3,24 @@ package yyl.mvc.util.page;
 import java.io.Serializable;
 
 /**
- * 分页查询条件参数： 包含分页查询的页数，每页最大记录，查询条件，排序条件等信息。<br>
+ * 分页查询条件参数<br>
  * @author YYL
  * @version 2010-10-10
  */
-@SuppressWarnings("serial")
-public class Pagination implements Serializable {
+public interface Pagination extends Serializable {
 
-    // =================================Constants=============================================
-    public static final int DEFAULT_LIMIT = 20;
-
-    // =================================Fields=================================================
-    /** 开始查询 的数据索引号 (从0开始) */
-    private int offset = 0;
-
-    /** 每页条数 */
-    private int limit = DEFAULT_LIMIT;
-
-    // =================================Constructors===========================================
-    /**
-     * 构造函数
-     */
-    public Pagination() {
-        this(0, DEFAULT_LIMIT);
-    }
+    /** 默认每页记录条数 */
+    int DEFAULT_LIMIT = 20;
 
     /**
-     * 构造函数
-     * @param offset 查询数据开始索引
-     * @param limit 查询记录数
-     */
-    public Pagination(int offset, int limit) {
-        this.offset = offset;
-        this.limit = limit;
-    }
-
-    // =================================Methods================================================
-    /**
-     * 获取查询的偏移量(从第几条数据开始查询)
+     * 获取从第几条数据开始查询
      * @return 查询的偏移量
      */
-    public int getOffset() {
-        return offset;
-    }
-
-    /**
-     * 设置查询的偏移量(从第几条数据开始查询)
-     * @param offset 查询的偏移量
-     */
-    public void setOffset(int offset) {
-        this.offset = offset;
-    }
+    int getOffset();
 
     /**
      * 获取每页显示记录数
      * @return 每页显示记录数
      */
-    public int getLimit() {
-        return limit;
-    }
-
-    /**
-     * 设置每页显示记录数
-     * @param limit 每页显示记录数
-     */
-    public void setLimit(int limit) {
-        this.limit = limit;
-    }
-
-    // =================================HashCode_Equals========================================
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + limit;
-        result = prime * result + offset;
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Pagination other = (Pagination) o;
-        return limit == other.limit && offset == other.offset;
-    }
+    int getLimit();
 }

@@ -3,8 +3,8 @@ package yyl.mvc.plug.mybatis;
 import java.util.List;
 import java.util.function.Supplier;
 
-import yyl.mvc.plug.jdbc.Dialect;
-import yyl.mvc.util.page.Page;
+import yyl.mvc.util.page.SimplePage;
+import yyl.mvc.util.jdbc.Dialect;
 import yyl.mvc.util.page.Pagination;
 
 /**
@@ -22,7 +22,7 @@ public class MybatisHelper {
      * @param select 查询方法
      * @return 分页查询结果
      */
-    public static <T> Page<T> selectPage(Pagination pagination, Select<T> select) {
+    public static <T> SimplePage<T> selectPage(Pagination pagination, Select<T> select) {
         try {
             PAGINATION_HOLDER.set(pagination);
             TOTAL_HOLDER.set(-1L);
@@ -30,7 +30,7 @@ public class MybatisHelper {
             int offset = pagination.getOffset();
             int limit = pagination.getLimit();
             long total = TOTAL_HOLDER.get();
-            return new Page<T>(offset, limit, records, total);
+            return new SimplePage<T>(offset, limit, records, total);
         } finally {
             release();
         }

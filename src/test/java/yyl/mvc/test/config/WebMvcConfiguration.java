@@ -17,7 +17,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 
-import yyl.mvc.plug.json.MyObjectMapper;
+import yyl.mvc.plug.jackson.MyObjectMapper;
 import yyl.mvc.plug.spring.convert.DateConverter;
 import yyl.mvc.plug.spring.convert.EnumConverterFactory;
 import yyl.mvc.plug.spring.convert.ListxConverter;

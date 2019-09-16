@@ -1,13 +1,13 @@
-package yyl.mvc.plug.jdbc.impl;
+package yyl.mvc.util.jdbc.impl;
 
-import yyl.mvc.plug.jdbc.Dialect;
+import yyl.mvc.util.jdbc.Dialect;
 
 /**
- * JDBC查询方言mysql实现，主要用于提供分页查询<br>
+ * JDBC查询方言GreenPlum实现，主要用于提供分页查询<br>
  */
-public class PostgreSqlDialect implements Dialect {
+public class GreenPlumDialect implements Dialect {
 
-    public static final PostgreSqlDialect INSTANCE = new PostgreSqlDialect();
+    public static final GreenPlumDialect INSTANCE = new GreenPlumDialect();
 
     @Override
     public String getCountSql(String sql) {

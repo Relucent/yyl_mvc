@@ -1,4 +1,4 @@
-package yyl.mvc.plug.json;
+package yyl.mvc.plug.jackson;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import yyl.mvc.plug.json.databind.TreeNodeConverts;
+import yyl.mvc.plug.jackson.databind.TreeNodeConverts;
 import yyl.mvc.util.collect.Listx;
 import yyl.mvc.util.collect.Mapx;
 

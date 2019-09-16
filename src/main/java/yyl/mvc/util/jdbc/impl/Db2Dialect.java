@@ -1,6 +1,6 @@
-package yyl.mvc.plug.jdbc.impl;
+package yyl.mvc.util.jdbc.impl;
 
-import yyl.mvc.plug.jdbc.Dialect;
+import yyl.mvc.util.jdbc.Dialect;
 
 /**
  * JDBC查询方言DB2实现，主要用于提供分页查询<br>

@@ -1,4 +1,4 @@
-package yyl.mvc.plug.jdbc;
+package yyl.mvc.util.jdbc;
 
 import java.sql.Connection;
 

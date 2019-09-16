@@ -41,7 +41,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 import yyl.mvc.util.bean.BeanUtil;
-import yyl.mvc.util.page.Page;
+import yyl.mvc.util.page.SimplePage;
 
 /**
  * 提供基础功能方法的数据访问层类.<br>
@@ -379,7 +379,7 @@ public class HibernateGenericDao extends HibernateDaoSupport {
      * @return 包含记录数和当前页数据的Page对象.
      * @see org.hibernate.criterion.DetachedCriteria
      */
-    public <T> Page<T> pagedQuery(DetachedCriteria criteria, int start, int limit) {
+    public <T> SimplePage<T> pagedQuery(DetachedCriteria criteria, int start, int limit) {
         return pagedQuery(criteria.getExecutableCriteria(getSession()), start, limit);
     }
 
@@ -392,15 +392,15 @@ public class HibernateGenericDao extends HibernateDaoSupport {
      * @see org.hibernate.Criteria
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    protected <T> Page<T> pagedQuery(Criteria criteria, int start, int limit) {
+    protected <T> SimplePage<T> pagedQuery(Criteria criteria, int start, int limit) {
         Assert.notNull(criteria, "criteria==null");
         Assert.isTrue(start >= 0, "start should be eg 0");
         Integer total = getCountByCriteria(criteria);
         if (total < 1) {
-            return new Page(0, limit, new ArrayList(), 0);
+            return new SimplePage(0, limit, new ArrayList(), 0);
         }
         List<T> records = criteria.setFirstResult(start).setMaxResults(limit).list();
-        return new Page<T>(start, limit, records, total);
+        return new SimplePage<T>(start, limit, records, total);
     }
 
     // ===================================统计函数==============================================

@@ -4,7 +4,7 @@ import org.springframework.beans.factory.FactoryBean;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import yyl.mvc.plug.json.MyObjectMapper;
+import yyl.mvc.plug.jackson.MyObjectMapper;
 
 /**
  * Jackson_ObjectMapper的工厂类

@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import yyl.mvc.plug.hibernate.HibernateSimpleEntityDao;
 import yyl.mvc.plug.hibernate.query.CriterionBuildWalker;
 import yyl.mvc.util.collect.Mapx;
-import yyl.mvc.util.page.Page;
+import yyl.mvc.util.page.SimplePage;
 import yyl.mvc.util.page.Pagination;
 
 public abstract class HibernateEntityBaseDao<T> extends HibernateSimpleEntityDao<T> {
@@ -23,7 +23,7 @@ public abstract class HibernateEntityBaseDao<T> extends HibernateSimpleEntityDao
      * @param filters 过滤条件
      * @return 分页对象，包含该页数据
      */
-    public Page<T> pagedQuery(Pagination pagination, Mapx filters) {
+    public SimplePage<T> pagedQuery(Pagination pagination, Mapx filters) {
         Criteria criteria = super.createCriteria(super.entityClass);
         int offset = pagination.getOffset();
         int limit = pagination.getLimit();

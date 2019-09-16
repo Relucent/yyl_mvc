@@ -29,8 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
-import yyl.mvc.plug.jdbc.DelegatingDialect;
-import yyl.mvc.plug.jdbc.Dialect;
+import yyl.mvc.util.jdbc.DelegatingDialect;
+import yyl.mvc.util.jdbc.Dialect;
 import yyl.mvc.util.page.Pagination;
 
 /**

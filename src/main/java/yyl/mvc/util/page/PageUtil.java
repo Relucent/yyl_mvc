@@ -6,27 +6,42 @@ package yyl.mvc.util.page;
  * @version 0.1 2012-10-08
  */
 public class PageUtil {
- 
-	/** 根据当前页第一条记录数和每页最大记录数计算出当前页数* */
-	public static int getPageNo(int offset, int pageSize) {
-		return (offset / pageSize) + 1;
-	}
 
-	/** 计算本页第一条记录的索引* */
-	public static int getOffset(int pageNo, int pageSize) {
-		if ((pageNo < 1) || (pageSize < 1)) {
-			return -1;
-		} else {
-			return (pageNo - 1) * pageSize;
-		}
-	}
-	
-	/** 计算最大页数* */
-	public static int getPageCount(int count, int pageSize) {
-		if ((count < 0) || (pageSize < 1)) {
-			return -1;
-		} else {
-			return (int) ((count - 1) / pageSize) + 1;
-		}
-	} 
+    /**
+     * 根据当前页第一条记录数和每页最大记录数计算出当前页数
+     * @param offset 当前页第一条记录的索引
+     * @param limit 每页最大记录数
+     * @return 当前页数
+     */
+    public static int getCurrent(int offset, int limit) {
+        return (offset / limit) + 1;
+    }
+
+    /**
+     * 计算本页第一条记录的索引
+     * @param current 页数
+     * @param limit 每页最大记录数
+     * @return 本页第一条记录的索引
+     */
+    public static int getOffset(int current, int limit) {
+        if ((current < 1) || (limit < 1)) {
+            return -1;
+        } else {
+            return (current - 1) * limit;
+        }
+    }
+
+    /**
+     * 计算最大页数
+     * @param total 总记录数
+     * @param limit 每页最大记录数
+     * @return 最大页数
+     */
+    public static int getPageTotal(long total, int limit) {
+        if ((total < 0) || (limit < 1)) {
+            return -1;
+        } else {
+            return (int) ((total - 1) / limit) + 1;
+        }
+    }
 }

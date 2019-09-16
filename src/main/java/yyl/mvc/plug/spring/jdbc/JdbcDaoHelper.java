@@ -13,8 +13,8 @@ import org.springframework.jdbc.support.KeyHolder;
 
 import com.google.common.collect.Lists;
 
-import yyl.mvc.plug.jdbc.Dialect;
-import yyl.mvc.util.page.Page;
+import yyl.mvc.util.page.SimplePage;
+import yyl.mvc.util.jdbc.Dialect;
 import yyl.mvc.util.page.Pagination;
 
 
@@ -84,14 +84,14 @@ public class JdbcDaoHelper {
      * @param dialect 数据方言
      * @return 分页查询結果
      */
-    public static <T> Page<T> pagedQuery(String sql, Object[] args, int offset, int limit, RowMapper<T> rowMapper,
+    public static <T> SimplePage<T> pagedQuery(String sql, Object[] args, int offset, int limit, RowMapper<T> rowMapper,
             JdbcTemplate jdbcTemplate, Dialect dialect) {
         int count = jdbcTemplate.queryForObject(dialect.getCountSql(sql), args, Long.class).intValue();
         if (count == 0) {
-            return new Page<T>(offset, limit, Lists.<T>newArrayList(), 0);
+            return new SimplePage<T>(offset, limit, Lists.<T>newArrayList(), 0);
         }
         List<T> records = jdbcTemplate.query(dialect.getLimitSql(sql, offset, limit), args, rowMapper);
-        return new Page<T>(offset, limit, records, count);
+        return new SimplePage<T>(offset, limit, records, count);
     }
 
     /**
@@ -105,7 +105,7 @@ public class JdbcDaoHelper {
      * @param dialect 方言
      * @return 分页查询結果
      */
-    public static <T> Page<T> pagedQuery(CharSequence sql, List<Object> args, int start, int limit,
+    public static <T> SimplePage<T> pagedQuery(CharSequence sql, List<Object> args, int start, int limit,
             RowMapper<T> rowMapper, JdbcTemplate jdbcTemplate, Dialect dialect) {
         return pagedQuery(sql.toString(), args.toArray(), start, limit, rowMapper, jdbcTemplate, dialect);
     }
@@ -121,7 +121,7 @@ public class JdbcDaoHelper {
      * @param dialect 方言
      * @return 分页查询結果
      */
-    public static <T> Page<T> pagedQuery(CharSequence sql, List<Object> args, Pagination pagination,
+    public static <T> SimplePage<T> pagedQuery(CharSequence sql, List<Object> args, Pagination pagination,
             RowMapper<T> rowMapper, JdbcTemplate jdbcTemplate, Dialect dialect) {
         return pagedQuery(sql.toString(), args.toArray(), pagination.getOffset(), pagination.getLimit(), rowMapper,
                 jdbcTemplate, dialect);

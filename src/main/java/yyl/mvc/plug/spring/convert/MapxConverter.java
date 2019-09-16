@@ -6,8 +6,7 @@ import yyl.mvc.util.collect.Mapx;
 import yyl.mvc.util.json.JsonUtil;
 
 public class MapxConverter implements Converter<String, Mapx> {
-
-	public Mapx convert(String text) {
-		return JsonUtil.toMapx(text);
-	}
+    public Mapx convert(String text) {
+        return JsonUtil.toMap(text);
+    }
 }
