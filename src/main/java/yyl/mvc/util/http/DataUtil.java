@@ -11,7 +11,7 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import yyl.mvc.util.lang.Assert;
+import yyl.mvc.util.lang.AssertUtil;
 
 /**
  * Internal static utilities for handling data.
@@ -35,7 +35,7 @@ public final class DataUtil {
 	 * @throws IOException if an exception occurs whilst reading from the input stream.
 	 */
 	static ByteBuffer readToByteBuffer(InputStream inStream, int maxSize) throws IOException {
-		Assert.isTrue(maxSize >= 0, "maxSize must be 0 (unlimited) or larger");
+		AssertUtil.isTrue(maxSize >= 0, "maxSize must be 0 (unlimited) or larger");
 		final boolean capped = maxSize > 0;
 		byte[] buffer = new byte[BUFFER_SIZE];
 		ByteArrayOutputStream outStream = new ByteArrayOutputStream(BUFFER_SIZE);

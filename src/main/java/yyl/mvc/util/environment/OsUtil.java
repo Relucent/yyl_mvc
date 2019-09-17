@@ -1,4 +1,4 @@
-package yyl.mvc.util.lang;
+package yyl.mvc.util.environment;
 
 public class OsUtil {
 

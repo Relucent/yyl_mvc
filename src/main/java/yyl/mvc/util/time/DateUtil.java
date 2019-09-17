@@ -1,4 +1,4 @@
-package yyl.mvc.util.lang.time;
+package yyl.mvc.util.time;
 
 import java.text.DateFormat;
 import java.text.ParseException;

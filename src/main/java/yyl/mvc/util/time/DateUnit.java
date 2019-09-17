@@ -1,4 +1,4 @@
-package yyl.mvc.util.lang.time;
+package yyl.mvc.util.time;
 
 /**
  * 时间单位

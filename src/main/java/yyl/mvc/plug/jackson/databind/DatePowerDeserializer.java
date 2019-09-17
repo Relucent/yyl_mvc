@@ -8,7 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 
-import yyl.mvc.util.lang.time.DateUtil;
+import yyl.mvc.util.time.DateUtil;
 
 /**
  * 日期反序列化

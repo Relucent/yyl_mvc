@@ -1,4 +1,4 @@
-package yyl.mvc.util.lang.time;
+package yyl.mvc.util.time;
 
 import java.util.Calendar;
 import java.util.Date;

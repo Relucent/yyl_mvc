@@ -1,4 +1,4 @@
-package yyl.mvc.util.lang;
+package yyl.mvc.util.thread;
 
 public class ThreadUtil {
 	/**

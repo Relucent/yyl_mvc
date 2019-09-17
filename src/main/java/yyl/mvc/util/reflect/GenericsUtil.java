@@ -1,4 +1,4 @@
-package yyl.mvc.util.lang;
+package yyl.mvc.util.reflect;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
