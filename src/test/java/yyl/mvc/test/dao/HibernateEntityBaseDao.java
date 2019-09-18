@@ -4,11 +4,11 @@ import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import yyl.mvc.plug.hibernate.HibernateSimpleEntityDao;
-import yyl.mvc.plug.hibernate.query.CriterionBuildWalker;
-import yyl.mvc.util.collect.Mapx;
-import yyl.mvc.util.page.SimplePage;
-import yyl.mvc.util.page.Pagination;
+import yyl.mvc.common.collect.Mapx;
+import yyl.mvc.common.page.Pagination;
+import yyl.mvc.common.page.SimplePage;
+import yyl.mvc.plugin.hibernate.HibernateSimpleEntityDao;
+import yyl.mvc.plugin.hibernate.query.CriterionBuildWalker;
 
 public abstract class HibernateEntityBaseDao<T> extends HibernateSimpleEntityDao<T> {
 

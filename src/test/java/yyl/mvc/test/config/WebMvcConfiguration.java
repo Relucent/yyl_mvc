@@ -17,12 +17,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 
-import yyl.mvc.plug.jackson.MyObjectMapper;
-import yyl.mvc.plug.spring.convert.DateConverter;
-import yyl.mvc.plug.spring.convert.EnumConverterFactory;
-import yyl.mvc.plug.spring.convert.ListxConverter;
-import yyl.mvc.plug.spring.convert.MapxConverter;
-import yyl.mvc.plug.spring.servlet.SpringMvcExceptionResolver;
+import yyl.mvc.plugin.jackson.MyObjectMapper;
+import yyl.mvc.plugin.spring.convert.DateConverter;
+import yyl.mvc.plugin.spring.convert.EnumConverterFactory;
+import yyl.mvc.plugin.spring.convert.ListxConverter;
+import yyl.mvc.plugin.spring.convert.MapxConverter;
+import yyl.mvc.plugin.spring.servlet.SpringMvcExceptionResolver;
 import yyl.mvc.test.plug.PaginationMethodArgumentResolver;
 
 @Configuration

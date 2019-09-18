@@ -1,5 +1,7 @@
 package yyl.mvc.util.identifier;
 
+import yyl.mvc.common.identifier.IdWorker;
+
 public class IdWorkerTest {
     /** 测试 */
     public static void main(String[] args) {

@@ -12,7 +12,7 @@
 	<context:property-placeholder ignore-unresolvable="true" properties-ref="applicationProperties" />
 
 	<!-- 通过application.properties读取配置 -->
-	<bean id="applicationProperties" class="yyl.mvc.plug.spring.config.ApplicationPropertiesFactoryBean" />
+	<bean id="applicationProperties" class="yyl.mvc.plugin.spring.config.ApplicationPropertiesFactoryBean" />
 
 	<!-- 扫描除了Controller以外的注解 -->
 	<context:component-scan base-package="yyl">

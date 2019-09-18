@@ -3,7 +3,8 @@ package yyl.mvc.util.http;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import yyl.mvc.util.http.Connection.Method;
+import yyl.mvc.common.http.Http;
+import yyl.mvc.common.http.Connection.Method;
 
 public class HttpTest {
     public static void main(String[] args) throws IOException {

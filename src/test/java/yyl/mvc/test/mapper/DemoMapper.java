@@ -2,7 +2,7 @@ package yyl.mvc.test.mapper;
 
 import java.util.List;
 
-import yyl.mvc.plug.mybatis.annotation.MapperRepository;
+import yyl.mvc.plugin.mybatis.annotation.MapperRepository;
 import yyl.mvc.test.model.Demo;
 
 @MapperRepository

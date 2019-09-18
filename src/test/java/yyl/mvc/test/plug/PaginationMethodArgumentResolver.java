@@ -6,9 +6,9 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import yyl.mvc.util.convert.ConvertUtil;
-import yyl.mvc.util.page.Pagination;
-import yyl.mvc.util.page.SimplePagination;
+import yyl.mvc.common.convert.ConvertUtil;
+import yyl.mvc.common.page.Pagination;
+import yyl.mvc.common.page.SimplePagination;
 
 /**
  * 分页视图适配器<br>
