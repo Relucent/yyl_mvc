@@ -1,7 +1,7 @@
 package yyl.mvc.common.json;
 
-import yyl.mvc.common.collect.Listx;
-import yyl.mvc.common.collect.Mapx;
+import yyl.mvc.common.collection.Listx;
+import yyl.mvc.common.collection.Mapx;
 
 public interface JsonHandler {
 

@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import yyl.mvc.common.collect.Mapx;
+import yyl.mvc.common.collection.Mapx;
 import yyl.mvc.common.page.Pagination;
 import yyl.mvc.common.page.SimplePage;
 import yyl.mvc.plugin.hibernate.HibernateSimpleEntityDao;

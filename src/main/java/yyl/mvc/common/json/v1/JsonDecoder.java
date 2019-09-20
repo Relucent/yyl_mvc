@@ -5,8 +5,8 @@ import java.io.StringReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import yyl.mvc.common.collect.Listx;
-import yyl.mvc.common.collect.Mapx;
+import yyl.mvc.common.collection.Listx;
+import yyl.mvc.common.collection.Mapx;
 
 /**
  * JSON编码工具类，将JAVA对象编码为JSON字符串。

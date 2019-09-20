@@ -1,50 +1,26 @@
-package yyl.mvc.common.collect;
+package yyl.mvc.common.collection;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import yyl.mvc.common.convert.ConvertUtil;
+
 
 /**
  * 增强版List接口的实现类。<br>
  */
 @SuppressWarnings("serial")
-public class Listx extends ArrayList<Object> {
+public class Listx extends ListWrapper<Object> {
 
-    @Override
-    public void add(int index, Object element) {
-        if (index < size()) {
-            super.add(index, element);
-        } else {
-            while (index != size()) {
-                super.add((Object) null);
-            }
-            super.add(element);
-        }
+    // ==============================Fields==============================================
+    // ...
+
+    // ==============================Constructors========================================
+    public Listx() {
+        super(new ArrayList<>());
     }
 
-
-    @Override
-    public Object set(int index, Object element) {
-        if (index < size()) {
-            return super.set(index, element);
-        } else {
-            while (index != size()) {
-                super.add((Object) null);
-            }
-            super.add(element);
-            return null;
-        }
-    }
-
-    @Override
-    public List<Object> subList(int fromIndex, int toIndex) {
-        Listx result = new Listx();
-        result.addAll(super.subList(fromIndex, toIndex));
-        return result;
-    }
-
+    // ==============================Methods=============================================
     public Boolean getBoolean(int index) {
         return getBoolean(index, null);
     }

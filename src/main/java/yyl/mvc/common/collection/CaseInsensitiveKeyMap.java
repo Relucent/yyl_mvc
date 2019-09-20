@@ -1,4 +1,4 @@
-package yyl.mvc.common.collect;
+package yyl.mvc.common.collection;
 
 import java.util.AbstractCollection;
 import java.util.AbstractSet;
@@ -9,11 +9,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections.map.CaseInsensitiveMap;
 
 /**
  * 忽略KEY大小写的 MAP (目前实现不保证线程安全，内部实现基于HashMap) <br>
- * 与 {@link CaseInsensitiveMap}的不同点在于，前者实现是将KEY转换为小写，而 {@link CaseInsensitiveKeyMap} 会保留原始KEY大小写。
  */
 public class CaseInsensitiveKeyMap<V> implements Map<String, V> {
 

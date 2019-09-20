@@ -1,7 +1,7 @@
 package yyl.mvc.common.bean.mapping;
 
 import yyl.mvc.common.bean.MapConfig;
-import yyl.mvc.common.collect.Mapx;
+import yyl.mvc.common.collection.Mapx;
 
 /**
  * 适配器接口 <br>

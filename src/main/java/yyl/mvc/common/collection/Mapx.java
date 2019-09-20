@@ -1,17 +1,27 @@
-package yyl.mvc.common.collect;
+package yyl.mvc.common.collection;
 
 import java.util.Date;
 import java.util.LinkedHashMap;
 
 import yyl.mvc.common.convert.ConvertUtil;
 
+
 /**
  * 增强版Map接口的实现类。<br>
  * @author YYL
  */
 @SuppressWarnings("serial")
-public class Mapx extends LinkedHashMap<String, Object> {
+public class Mapx extends MapWrapper<String, Object> {
 
+    // ==============================Fields==============================================
+    // ...
+
+    // ==============================Constructors========================================
+    public Mapx() {
+        super(new LinkedHashMap<>());
+    }
+
+    // ==============================Methods=============================================
     public Boolean getBoolean(String key) {
         return getBoolean(key, null);
     }

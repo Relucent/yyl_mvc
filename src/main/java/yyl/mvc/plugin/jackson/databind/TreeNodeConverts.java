@@ -14,8 +14,8 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
 
-import yyl.mvc.common.collect.Listx;
-import yyl.mvc.common.collect.Mapx;
+import yyl.mvc.common.collection.Listx;
+import yyl.mvc.common.collection.Mapx;
 
 /**
  * 类型转换工具类

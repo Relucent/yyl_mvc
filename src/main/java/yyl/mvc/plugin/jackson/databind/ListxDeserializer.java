@@ -8,7 +8,7 @@ import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 
-import yyl.mvc.common.collect.Listx;
+import yyl.mvc.common.collection.Listx;
 
 /**
  * _Listx反序列化

@@ -3,8 +3,8 @@ package yyl.mvc.common.json.v1;
 import java.util.Map;
 
 import yyl.mvc.common.bean.BeanUtil;
-import yyl.mvc.common.collect.Listx;
-import yyl.mvc.common.collect.Mapx;
+import yyl.mvc.common.collection.Listx;
+import yyl.mvc.common.collection.Mapx;
 
 
 public class JsonHandler implements yyl.mvc.common.json.JsonHandler {

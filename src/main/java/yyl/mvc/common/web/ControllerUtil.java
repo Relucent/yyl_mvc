@@ -13,7 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import yyl.mvc.common.collect.Mapx;
+import yyl.mvc.common.collection.Mapx;
 import yyl.mvc.common.json.JsonUtil;
 
 /**

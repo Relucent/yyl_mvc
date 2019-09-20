@@ -7,7 +7,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 
-import yyl.mvc.common.collect.Listx;
+import yyl.mvc.common.collection.Listx;
 import yyl.mvc.common.convert.ConvertUtil;
 
 /**

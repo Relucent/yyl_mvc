@@ -13,7 +13,7 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.springframework.beans.factory.InitializingBean;
 
-import yyl.mvc.common.collect.Mapx;
+import yyl.mvc.common.collection.Mapx;
 import yyl.mvc.common.convert.ConvertUtil;
 import yyl.mvc.plugin.hibernate.support.MetadataInfoLookup;
 import yyl.mvc.plugin.hibernate.util.HibernateUtil;

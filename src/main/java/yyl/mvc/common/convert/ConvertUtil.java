@@ -6,8 +6,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import yyl.mvc.common.collect.Listx;
-import yyl.mvc.common.collect.Mapx;
+import yyl.mvc.common.collection.Listx;
+import yyl.mvc.common.collection.Mapx;
 import yyl.mvc.common.convert.support.BooleanConverter;
 import yyl.mvc.common.convert.support.CharacterConverter;
 import yyl.mvc.common.convert.support.DateConverter;

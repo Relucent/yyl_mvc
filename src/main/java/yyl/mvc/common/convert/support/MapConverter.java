@@ -2,7 +2,7 @@ package yyl.mvc.common.convert.support;
 
 import java.util.Map;
 
-import yyl.mvc.common.collect.Mapx;
+import yyl.mvc.common.collection.Mapx;
 import yyl.mvc.common.convert.Converter;
 
 /**

@@ -8,8 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
-import yyl.mvc.common.collect.Listx;
-import yyl.mvc.common.collect.Mapx;
+import yyl.mvc.common.collection.Listx;
+import yyl.mvc.common.collection.Mapx;
 import yyl.mvc.plugin.jackson.databind.DatePowerDeserializer;
 import yyl.mvc.plugin.jackson.databind.DatePowerSerializer;
 import yyl.mvc.plugin.jackson.databind.ListxDeserializer;

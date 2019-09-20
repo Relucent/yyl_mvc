@@ -1,4 +1,4 @@
-package yyl.mvc.common.collect;
+package yyl.mvc.common.collection;
 
 import java.util.AbstractSet;
 import java.util.Collection;

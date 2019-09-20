@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
-import yyl.mvc.common.collect.Listx;
+import yyl.mvc.common.collection.Listx;
 import yyl.mvc.common.convert.Converter;
 
 /**
