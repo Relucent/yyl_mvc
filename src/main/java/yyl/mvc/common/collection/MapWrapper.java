@@ -14,7 +14,7 @@ import java.util.Set;
 public class MapWrapper<K, V> implements Map<K, V>, Serializable, Cloneable {
 
     // ==============================Fields==============================================
-    /** 默认增长因子 */
+    /** 默认负载因子 */
     protected static final float DEFAULT_LOAD_FACTOR = 0.75f;
     /** 默认初始大小 */
     protected static final int DEFAULT_INITIAL_CAPACITY = 16;
@@ -90,5 +90,10 @@ public class MapWrapper<K, V> implements Map<K, V>, Serializable, Cloneable {
     @Override
     public Set<Entry<K, V>> entrySet() {
         return raw.entrySet();
+    }
+
+    @Override
+    public String toString() {
+        return raw.toString();
     }
 }

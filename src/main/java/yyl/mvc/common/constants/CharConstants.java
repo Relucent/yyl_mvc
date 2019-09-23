@@ -1,6 +1,8 @@
 package yyl.mvc.common.constants;
 
-/** 常用字符常量 */
+/**
+ * 常量字符
+ */
 public class CharConstants {
 
     /** 水平制表符(horizontal tab) [0x09] */

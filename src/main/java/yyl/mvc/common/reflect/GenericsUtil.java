@@ -8,70 +8,66 @@ import java.lang.reflect.Type;
  */
 public class GenericsUtil {
 
-	/**
-	 * 通过反射，获得定义Class时声明的父类的范型参数的类型：如public BookManager extends GenricManager<Book>。
-	 * @param clazz The class to introspect.
-	 * @return the first generic declaration, or <code>Object.class</code> if cannot be determined.
-	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static <T> Class<T> getSuperClassGenricType(Class clazz) {
-		return (Class<T>) getSuperClassGenricType(clazz, 0);
-	}
+    /**
+     * 获得定义类时声明父类的第一个泛型参数的类型
+     * @param clazz 对象类
+     * @return 第一个泛型参数的类型
+     */
+    public static Class<?> getSuperClassGenricType(Class<?> clazz) {
+        return getSuperClassGenricType(clazz, 0);
+    }
 
-	/**
-	 * 通过反射，获得定义Class时声明的父类的范型参数的类型：如public BookManager extends GenricManager<Book>。
-	 * 
-	 * @param clazz clazz The class to introspect．
-	 * @param index the Index of the generic declaration, start from 0.
-	 * @return the index generic declaration, or <code>Object.class</code> if cannot be determined.
-	 */
-	public static Class<?> getSuperClassGenricType(Class<?> clazz, int index) {
-		Type genType = clazz.getGenericSuperclass();
+    /**
+     * 获得定义类时声明父类的第泛型参数的类型
+     * @param clazz 对象类
+     * @param index 泛型参数索引，从0开始。
+     * @return 泛型参数的类型
+     */
+    public static Class<?> getSuperClassGenricType(Class<?> clazz, int index) {
+        Type genType = clazz.getGenericSuperclass();
 
-		if (!(genType instanceof ParameterizedType)) {
-			return Object.class;
-		}
+        if (!(genType instanceof ParameterizedType)) {
+            return Object.class;
+        }
 
-		Type[] params = ((ParameterizedType) genType).getActualTypeArguments();
+        Type[] params = ((ParameterizedType) genType).getActualTypeArguments();
 
-		if (index >= params.length || index < 0) {
-			return Object.class;
-		}
-		if (!(params[index] instanceof Class)) {
-			return Object.class;
-		}
+        if (index >= params.length || index < 0) {
+            return Object.class;
+        }
+        if (!(params[index] instanceof Class)) {
+            return Object.class;
+        }
 
-		return (Class<?>) params[index];
-	}
+        return (Class<?>) params[index];
+    }
 
-	/**
-	 * Locates the first generic declaration on a class.
-	 * 
-	 * @param clazz The class to introspect.
-	 * @return the first generic declaration, or <code>null</code> if cannot be determined.
-	 */
-	public static Class<?> getGenericClass(Class<?> clazz) {
-		return getGenericClass(clazz, 0);
-	}
+    /**
+     * 获得定义类时声明的第一个泛型参数的类型
+     * @param clazz 对象类
+     * @return 泛型参数的类型
+     */
+    public static Class<?> getGenericClass(Class<?> clazz) {
+        return getGenericClass(clazz, 0);
+    }
 
-	/**
-	 * Locates generic declaration by index on a class.
-	 * 
-	 * @param clazz clazz The class to introspect.
-	 * @param index the Index of the generic ddeclaration, start from 0.
-	 * @return the index generic declaration, or <code>null</code> if cannot be determined.
-	 */
-	public static Class<?> getGenericClass(Class<?> clazz, int index) {
-		Type genType = clazz.getGenericSuperclass();
+    /**
+     * 获得定义类时声明的泛型参数的类型
+     * @param clazz 对象类
+     * @param index 泛型参数索引，从0开始。
+     * @return 泛型参数的类型
+     */
+    public static Class<?> getGenericClass(Class<?> clazz, int index) {
+        Type genType = clazz.getGenericSuperclass();
 
-		if (genType instanceof ParameterizedType) {
-			Type[] params = ((ParameterizedType) genType).getActualTypeArguments();
+        if (genType instanceof ParameterizedType) {
+            Type[] params = ((ParameterizedType) genType).getActualTypeArguments();
 
-			if ((params != null) && (params.length >= (index - 1))) {
-				return (Class<?>) params[index];
-			}
-		}
+            if ((params != null) && (params.length >= (index - 1))) {
+                return (Class<?>) params[index];
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 }

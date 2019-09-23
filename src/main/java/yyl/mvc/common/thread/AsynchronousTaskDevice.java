@@ -1,4 +1,4 @@
-package yyl.mvc.common.concurrent;
+package yyl.mvc.common.thread;
 
 import java.util.Map;
 import java.util.concurrent.Callable;

@@ -106,7 +106,7 @@ public class DateUtil {
     /**
      * 返回给定日历给定周期类型字段的值。
      * @param date 时间
-     * @param field 时间周期
+     * @param unit 时间周期
      * @return 所在季度(0-1)
      */
     public static int getFieldValue(Date date, DateUnit unit) {

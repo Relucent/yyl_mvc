@@ -1,7 +1,7 @@
 package yyl.mvc.common.collection;
 
+import java.io.Serializable;
 import java.util.AbstractSet;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
  * @param <E> 元素类型
  */
 @SuppressWarnings("serial")
-public class ConcurrentHashSet<E> extends AbstractSet<E> implements java.io.Serializable {
+public class ConcurrentHashSet<E> extends AbstractSet<E> implements Serializable {
 
     // ==============================Fields==============================================
     /** 映射中的值对象，如果值为此对象表示有数据，否则无数据 */
@@ -25,16 +25,14 @@ public class ConcurrentHashSet<E> extends AbstractSet<E> implements java.io.Seri
 
     // ==============================Constructors========================================
     /**
-     * 构造<br>
-     * 触发因子为默认的0.75
+     * 构造函数
      */
     public ConcurrentHashSet() {
         map = new ConcurrentHashMap<>();
     }
 
     /**
-     * 构造<br>
-     * 触发因子为默认的0.75
+     * 构造函数
      * @param initialCapacity 初始大小
      */
     public ConcurrentHashSet(int initialCapacity) {
@@ -42,38 +40,32 @@ public class ConcurrentHashSet<E> extends AbstractSet<E> implements java.io.Seri
     }
 
     /**
-     * 构造
+     * 构造函数
      * @param initialCapacity 初始大小
-     * @param loadFactor 加载因子。此参数决定数据增长时触发的百分比
+     * @param loadFactor 负载因子
      */
     public ConcurrentHashSet(int initialCapacity, float loadFactor) {
         map = new ConcurrentHashMap<>(initialCapacity, loadFactor);
     }
 
     /**
-     * 构造
+     * 构造函数
      * @param initialCapacity 初始大小
-     * @param loadFactor 触发因子。此参数决定数据增长时触发的百分比
-     * @param concurrencyLevel 线程并发度
+     * @param loadFactor 负载因子
+     * @param concurrencyLevel 线程并发度，预估同时操作数据的线程
      */
     public ConcurrentHashSet(int initialCapacity, float loadFactor, int concurrencyLevel) {
         map = new ConcurrentHashMap<>(initialCapacity, loadFactor, concurrencyLevel);
     }
 
     /**
-     * 从已有集合中构造
-     * @param iter {@link Iterable}
+     * 构造函数，根据已有集合构造
+     * @param iterable 集合对象{@link Iterable}
      */
-    public ConcurrentHashSet(Iterable<E> iter) {
-        if (iter instanceof Collection) {
-            final Collection<E> collection = (Collection<E>) iter;
-            map = new ConcurrentHashMap<>((int) (collection.size() / 0.75f));
-            this.addAll(collection);
-        } else {
-            map = new ConcurrentHashMap<>();
-            for (E e : iter) {
-                this.add(e);
-            }
+    public ConcurrentHashSet(Iterable<E> iterable) {
+        map = new ConcurrentHashMap<>();
+        for (E e : iterable) {
+            add(e);
         }
     }
 
