@@ -117,7 +117,7 @@ public class MorseUtil {
      */
     public static final String encode(String text, MarkOption option) {
         if (text == null) {
-            throw new IllegalArgumentException("text can not be null");
+            throw new EncoderException("text can not be null");
         }
         // 字符串转大写
         text = text.toUpperCase();
@@ -185,7 +185,7 @@ public class MorseUtil {
      */
     public static String decode(String code, MarkOption option) {
         if (code == null) {
-            throw new IllegalArgumentException("morse code can not be null");
+            throw new DecoderException("morse code can not be null");
         }
         try {
             // 规范化莫尔斯电码
@@ -220,7 +220,7 @@ public class MorseUtil {
             }
             return buffer.toString();
         } catch (Exception e) {
-            throw new CodecException("Decoding error,morse-code or mark-option error !", e);
+            throw new DecoderException("Decoding error,morse-code or mark-option error !", e);
         }
     }
 

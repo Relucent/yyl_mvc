@@ -3,139 +3,103 @@ package yyl.mvc.common.io;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 /**
  * 文件工具类
  */
 public class FileUtil {
 
-    // ===================================Fields==============================================
-    /** 文件分隔符 */
-    public static final String FILE_SEPARATOR = "/";
-    /** 1KB */
-    public static final long ONE_KB = 1024L;
-    /** 1MB */
-    public static final long ONE_MB = ONE_KB * ONE_KB;
-    /** 1GB */
-    public static final long ONE_GB = ONE_KB * ONE_MB;
+    // -----------------------------------------------------------------------
+    /**
+     * 获得系统临时目录{@link File}
+     * @return 获得系统临时目录
+     */
+    public static File getTempDirectory() {
+        return new File(getTempDirectoryPath());
+    }
 
-    // ===================================Methods=============================================
+    /**
+     * 获得系统临时目录路径
+     * @return 获得系统临时目录路径
+     */
+    public static String getTempDirectoryPath() {
+        return System.getProperty("java.io.tmpdir");
+    }
 
-	/**
-	 * 获得文件相对路径
-	 * @param root 根目录
-	 * @param path 文件路径
-	 * @return 拆分后的相对路径
-	 */
-	public static String relative(String root, String path) {
-		root = separatorsToUnix(root);
-		path = separatorsToUnix(path);
-		if (path.indexOf(root) == 0) {
-			return new String(path.substring(root.length()));
-		}
-		return path;
-	}
+    // -----------------------------------------------------------------------
+    /**
+     * 打开文件输入流{@link FileInputStream}(用于从文件中读取数据)。<br>
+     * @param file 要打开的文件, 不能为空 {@code null}
+     * @return 文件的输入流 {@link FileOutputStream} (用于从文件中读取数据)
+     * @throws FileNotFoundException 如果文件不存在
+     * @throws IOException 如果文件是目录
+     * @throws IOException 如果文件不能被读取
+     */
+    public static FileInputStream openInputStream(File file) throws IOException {
+        if (file.exists()) {
+            if (file.isDirectory()) {
+                throw new IOException("File '" + file + "' exists but is a directory");
+            }
+            if (file.canRead() == false) {
+                throw new IOException("File '" + file + "' cannot be read");
+            }
+        } else {
+            throw new FileNotFoundException("File '" + file + "' does not exist");
+        }
+        return new FileInputStream(file);
+    }
 
-	/**
-	 * 删除文件(如果是文件夹，将会递归删除)
-	 * @param file 文件
-	 */
-	public static void delete(File file) {
-		if (file != null && file.exists()) {
-			if (file.isFile()) {
-				file.delete();
-			} else if (file.isDirectory()) {
-				File files[] = file.listFiles();
-				for (int i = 0; i < files.length; i++) {
-					delete(files[i]);
-				}
-			}
-			file.delete();
-		}
-	}
+    // -----------------------------------------------------------------------
+    /**
+     * 打开文件输出流{@link FileOutputStream}(用于将数据写入文件)。 如果文件不存在，将创建该文件；如果父目录不存在，则检查并创建父目录。<br>
+     * @param file 要打开的文件, 不能为{@code null}
+     * @return 文件输出流 {@link FileOutputStream}(用于将数据写入文件)
+     * @throws IOException 如果指定的文件是一个目录
+     * @throws IOException 如果指定的文件不可写入
+     * @throws IOException 如果需要创建父目录但创建失败
+     */
+    public static FileOutputStream openOutputStream(File file) throws IOException {
+        return openOutputStream(file, false);
+    }
 
-	/**
-	 * 规范化文件路径[文件分割符使用正斜杠(/)]
-	 * @param path 规范化文件路径
-	 * @return 符合规范的文件路径
-	 */
-	public static String separatorsToUnix(String path) {
-		if ((path == null) || (path.indexOf('\\') == -1)) {
-			return path;
-		}
-		return path.replace('\\', '/');
-	}
+    /**
+     * 打开文件输出流{@link FileOutputStream}(用于将数据写入文件)。 如果文件不存在，将创建该文件；如果父目录不存在，则检查并创建父目录。<br>
+     * @param file 要打开的文件, 不能为{@code null}
+     * @param append 如果为{@code true}, 字节将被添加到文件末尾，而不是覆盖。
+     * @return 文件输出流 {@link FileOutputStream}(用于将数据写入文件)
+     * @throws IOException 如果指定的文件是一个目录
+     * @throws IOException 如果指定的文件不可写入
+     * @throws IOException 如果需要创建父目录但创建失败
+     */
+    public static FileOutputStream openOutputStream(File file, boolean append) throws IOException {
+        if (file.exists()) {
+            if (file.isDirectory()) {
+                throw new IOException("File '" + file + "' exists but is a directory");
+            }
+            if (file.canWrite() == false) {
+                throw new IOException("File '" + file + "' cannot be written to");
+            }
+        } else {
+            File parent = file.getParentFile();
+            if (parent != null) {
+                if (!parent.mkdirs() && !parent.isDirectory()) {
+                    throw new IOException("Directory '" + parent + "' could not be created");
+                }
+            }
+        }
+        return new FileOutputStream(file, append);
+    }
 
-	/**
-	 * 打开文件流
-	 * @param file 文件
-	 * @return 文件流
-	 */
-	public static FileInputStream openInputStream(File file) throws IOException {
-		if (file.exists()) {
-			if (file.isDirectory()) {
-				throw new IOException("File '" + file + "' exists but is a directory");
-			}
-			if (file.canRead() == false) {
-				throw new IOException("File '" + file + "' cannot be read");
-			}
-		} else {
-			throw new FileNotFoundException("File '" + file + "' does not exist");
-		}
-		return new FileInputStream(file);
-	}
-
-	/**
-	 * 开放文件权限读写权限(rw/rw/rw)
-	 * @param file 文件
-	 */
-	public static void chmod666(File file) {
-		if (file.exists()) {
-			file.setReadable(true, false);// 读
-			file.setWritable(true, false);// 写
-			// file.setExecutable(true, false);//运行
-		}
-	}
-
-	/**
-	 * 将文件压缩并写入流中
-	 * @param file 文件
-	 * @param output 输出流
-	 */
-	public static void writeToZipOutputStream(File file, OutputStream output) throws Exception {
-		ZipOutputStream out = new ZipOutputStream(output);
-		writeToZipOutputStream(out, file, "");
-		out.flush();
-	}
-
-	/**
-	 * 将文件压缩并写入流中
-	 * @param file 文件
-	 * @param output 输出流
-	 * @param path ZIP层级目录
-	 */
-	private static void writeToZipOutputStream(ZipOutputStream output, File file, String path) throws Exception {
-		if (file.isDirectory()) {
-			output.putNextEntry(new ZipEntry(path + "/"));
-			path = path.isEmpty() ? "" : path + "/";
-			for (File f : file.listFiles()) {
-				writeToZipOutputStream(output, f, path + f.getName());
-			}
-		} else if (file.isFile()) {
-			output.putNextEntry(new ZipEntry(path));
-			InputStream input = null;
-			try {
-				input = openInputStream(file);
-				IoUtil.copy(input, output);
-			} finally {
-				IoUtil.closeQuietly(input);
-			}
-		}
-
-	}
+    /**
+     * 开放文件权限读写权限(rw/rw/rw)
+     * @param file 文件
+     */
+    public static void chmod666(File file) {
+        if (file.exists()) {
+            file.setReadable(true, false);// 读
+            file.setWritable(true, false);// 写
+        }
+    }
 }

@@ -30,12 +30,11 @@ public class HexUtil {
      * 将表示十六进制值的字符数组转换为这些值的字节数组。返回的数组将是传递数组长度的一半，因为它需要两个字符来表示任何给定的字节。如果传递的char数组包含奇数个元素，则会引发异常。
      * @param data 包含十六进制数字的字符数组
      * @return 字节数组，包含从所提供的字符数组中解码的二进制数据。
-     * @throws CodecException 如果提供奇数或非法字符抛出异常
      */
-    public static byte[] decodeHex(final char[] data) throws CodecException {
+    public static byte[] decodeHex(final char[] data) {
         final int len = data.length;
         if ((len & 0x01) != 0) {
-            throw new CodecException("Odd number of characters.");
+            throw new DecoderException("Odd number of characters.");
         }
         final byte[] out = new byte[len >> 1];
         // two characters form the hex value.
@@ -99,12 +98,11 @@ public class HexUtil {
      * @param ch 要转换为整数的字符
      * @param index 源中字符的索引，用于出现异常时候显示位置
      * @return 整数
-     * @throws CodecException 如果ch是非法的十六进制字符，则抛出异常
      */
-    protected static int toDigit(final char ch, final int index) throws CodecException {
+    protected static int toDigit(final char ch, final int index) {
         final int digit = Character.digit(ch, 16);
         if (digit == -1) {
-            throw new CodecException("Illegal hexadecimal character " + ch + " at index " + index);
+            throw new DecoderException("Illegal hexadecimal character " + ch + " at index " + index);
         }
         return digit;
     }

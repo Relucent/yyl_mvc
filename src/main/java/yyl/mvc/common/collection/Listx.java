@@ -5,7 +5,6 @@ import java.util.Date;
 
 import yyl.mvc.common.convert.ConvertUtil;
 
-
 /**
  * 增强版List接口的实现类。<br>
  */
