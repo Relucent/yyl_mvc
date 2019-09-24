@@ -16,6 +16,7 @@ target/
 .settings/
 .metadata/
 .factorypath
+.springBeans
 
 # IntelliJ Idea
 .idea/
@@ -33,8 +34,4 @@ Thumbs.db
 # Log File
 *.log
 *.log.*
-
-# Other
-.vertx
-
 
