@@ -1,18 +1,24 @@
 package yyl.mvc.common.collection;
 
+import java.util.AbstractCollection;
+import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 /**
  * 忽略键大小写的 MAP <br>
- * 内部实现会将键转换为小写，基于HashMap，不保证线程安全 <br>
+ * 内部实现基于HashMap，不保证线程安全 <br>
  */
 public class CaseInsensitiveKeyMap<V> implements Map<String, V> {
 
     // =================================Fields=================================================
-    private final Map<String, V> map;
+    private final Map<Key, V> map;
+    private transient Set<String> keySet;
+    private transient Collection<V> values;
 
     // =================================Constructs=============================================
     /**
@@ -48,13 +54,12 @@ public class CaseInsensitiveKeyMap<V> implements Map<String, V> {
 
     @Override
     public boolean isEmpty() {
-        return map.isEmpty();
+        return size() == 0;
     }
 
     @Override
     public boolean containsKey(Object key) {
-        String convertedKey = convertKey(key);
-        return map.containsKey(convertedKey);
+        return map.containsKey(Key.getInstance(key));
     }
 
     @Override
@@ -64,20 +69,17 @@ public class CaseInsensitiveKeyMap<V> implements Map<String, V> {
 
     @Override
     public V get(Object key) {
-        String convertedKey = convertKey(key);
-        return map.get(convertedKey);
+        return map.get(Key.getInstance(key));
     }
 
     @Override
     public V put(String key, V value) {
-        String convertedKey = convertKey(key);
-        return map.put(convertedKey, value);
+        return map.put(Key.getInstance(key), value);
     }
 
     @Override
     public V remove(Object key) {
-        String convertedKey = convertKey(key);
-        return map.remove(convertedKey);
+        return map.remove(Key.getInstance(key));
     }
 
     @Override
@@ -94,37 +96,205 @@ public class CaseInsensitiveKeyMap<V> implements Map<String, V> {
 
     @Override
     public Set<String> keySet() {
-        return map.keySet();
+        Set<String> ks = keySet;
+        if (ks == null) {
+            ks = new AbstractSet<String>() {
+                public Iterator<String> iterator() {
+                    return new Iterator<String>() {
+                        private Iterator<Entry<String, V>> i = entrySet().iterator();
+
+                        public boolean hasNext() {
+                            return i.hasNext();
+                        }
+
+                        public String next() {
+                            return i.next().getKey();
+                        }
+
+                        public void remove() {
+                            i.remove();
+                        }
+                    };
+                }
+
+                public int size() {
+                    return CaseInsensitiveKeyMap.this.size();
+                }
+
+                public boolean isEmpty() {
+                    return CaseInsensitiveKeyMap.this.isEmpty();
+                }
+
+                public void clear() {
+                    CaseInsensitiveKeyMap.this.clear();
+                }
+
+                public boolean contains(Object k) {
+                    return CaseInsensitiveKeyMap.this.containsKey(k);
+                }
+            };
+            keySet = ks;
+        }
+        return ks;
     }
 
     @Override
     public Collection<V> values() {
-        return map.values();
+        Collection<V> vals = values;
+        if (vals == null) {
+            vals = new AbstractCollection<V>() {
+                public Iterator<V> iterator() {
+                    return new Iterator<V>() {
+                        private Iterator<Entry<String, V>> i = entrySet().iterator();
+
+                        public boolean hasNext() {
+                            return i.hasNext();
+                        }
+
+                        public V next() {
+                            return i.next().getValue();
+                        }
+
+                        public void remove() {
+                            i.remove();
+                        }
+                    };
+                }
+
+                public int size() {
+                    return CaseInsensitiveKeyMap.this.size();
+                }
+
+                public boolean isEmpty() {
+                    return CaseInsensitiveKeyMap.this.isEmpty();
+                }
+
+                public void clear() {
+                    CaseInsensitiveKeyMap.this.clear();
+                }
+
+                public boolean contains(Object v) {
+                    return CaseInsensitiveKeyMap.this.containsValue(v);
+                }
+            };
+            values = vals;
+        }
+        return vals;
     }
 
     @Override
     public Set<Entry<String, V>> entrySet() {
-        return map.entrySet();
+        return new EntrySet<>(map.entrySet());
     }
 
-    @Override
-    public String toString() {
-        return map.toString();
+    // =================================InnerClass=============================================
+    private static class EntrySet<V> extends AbstractSet<Entry<String, V>> {
+
+        private final Set<Entry<Key, V>> entrySet;
+
+        public EntrySet(Set<Map.Entry<Key, V>> entrySet) {
+            this.entrySet = entrySet;
+        }
+
+        @Override
+        public Iterator<Entry<String, V>> iterator() {
+            return new EntryIterator<>(entrySet.iterator());
+        }
+
+        @Override
+        public int size() {
+            return entrySet.size();
+        }
     }
 
-    /**
-     * 将输入键转换为另一个对象以存储在映射中。
-     * @param key 转换的键
-     * @return 转换后的键
-     */
-    protected String convertKey(Object key) {
-        if (key == null) {
-            return "";
+    private static class EntryIterator<V> implements Iterator<Entry<String, V>> {
+
+        private final Iterator<Entry<Key, V>> iterator;
+
+        public EntryIterator(Iterator<Entry<Key, V>> iterator) {
+            this.iterator = iterator;
         }
-        final char[] chars = key.toString().toCharArray();
-        for (int i = chars.length - 1; i >= 0; i--) {
-            chars[i] = Character.toLowerCase(Character.toUpperCase(chars[i]));
+
+        @Override
+        public boolean hasNext() {
+            return iterator.hasNext();
         }
-        return new String(chars);
+
+        @Override
+        public Entry<String, V> next() {
+            Entry<Key, V> entry = iterator.next();
+            return new EntryImpl<>(entry.getKey().getKey(), entry.getValue());
+        }
+
+        @Override
+        public void remove() {
+            iterator.remove();
+        }
+    }
+    private static class EntryImpl<V> implements Entry<String, V> {
+
+        private final String key;
+        private final V value;
+
+        public EntryImpl(String key, V value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        @Override
+        public String getKey() {
+            return key;
+        }
+
+        @Override
+        public V getValue() {
+            return value;
+        }
+
+        @Override
+        public V setValue(V value) {
+            throw new UnsupportedOperationException();
+        }
+    }
+    private static class Key {
+
+        private final String key;
+        private final String lcKey;
+
+        private Key(String key) {
+            this.key = key;
+            this.lcKey = key.toLowerCase(Locale.ENGLISH);
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        @Override
+        public int hashCode() {
+            return lcKey.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            Key other = (Key) obj;
+            return lcKey.equals(other.lcKey);
+        }
+
+        public static Key getInstance(Object o) {
+            if (o instanceof String) {
+                return new Key((String) o);
+            }
+            return null;
+        }
     }
 }
