@@ -113,4 +113,7 @@ public class CharConstants {
 
     /** 中文(全角)句号 */
     public static final char FULL_WIDTH_DOT = '。';
+
+    /** UTF-8 BOM FEFF(65279) */
+    public static final char UTF_8_BOM = 0xFEFF;
 }

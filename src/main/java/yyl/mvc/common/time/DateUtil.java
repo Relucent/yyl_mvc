@@ -35,6 +35,8 @@ public class DateUtil {
             "MMM d, yyyy HH:mm", //
             "MMM d, yyyy", //
             "MM/dd/yyyy", //
+            "yyyyMMdd", //
+            "yyyyMM", //
             "yyyy"//
     ).toArray(new String[0]);
 
@@ -44,6 +46,14 @@ public class DateUtil {
             return new SimpleDateFormat(ISO_DATETIME_FORMAT);
         };
     };
+
+    /**
+     * 获得当前时间
+     * @return 当前时间
+     */
+    public static Date now() {
+        return new Date();
+    }
 
     /**
      * 根据字符串解析日期
