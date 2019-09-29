@@ -6,7 +6,6 @@ import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Locale;
 
 /**
  * 日期工具类
@@ -57,15 +56,15 @@ public class DateUtil {
 
     /**
      * 根据字符串解析日期
-     * @param value 日期字符串
+     * @param source 日期字符串
      * @return 日期对象
      */
-    public static Date parse(String value) {
-        if (value == null) {
+    public static Date parseDate(String source) {
+        if (source == null || source.isEmpty()) {
             return null;
         }
         try {
-            return forceParseDate(value, Locale.ENGLISH);
+            return forceParseDate(source);
         } catch (Exception e) {
             return null;
         }
@@ -145,50 +144,62 @@ public class DateUtil {
 
     /**
      * 解析日期字符串
-     * @param value 日期字符串
-     * @param locale 地区对象
+     * @param source 日期字符串
      * @return 日期对象
      */
-    private static Date forceParseDate(final String str, final Locale locale) throws ParseException {
-
-        if (str == null) {
-            throw new IllegalArgumentException("DateString must not be null");
+    private static Date forceParseDate(final String source) throws ParseException {
+        if (source == null) {
+            throw new IllegalArgumentException("date string must not be null");
         }
-
-        SimpleDateFormat parser;
-        if (locale == null) {
-            parser = new SimpleDateFormat();
-        } else {
-            parser = new SimpleDateFormat("", locale);
-        }
-
-        // 不严格模式
+        SimpleDateFormat parser = new SimpleDateFormat();
         parser.setLenient(true);
-        final ParsePosition pos = new ParsePosition(0);
+        ParsePosition pos = new ParsePosition(0);
         for (final String parsePattern : PARSE_DATE_PATTERNS) {
-
             String pattern = parsePattern;
-
             // LANG-530 - need to make sure 'ZZ' output doesn't get passed to SimpleDateFormat
-            if (parsePattern.endsWith("ZZ")) {
+            if (pattern.endsWith("ZZ")) {
                 pattern = pattern.substring(0, pattern.length() - 1);
             }
-
             parser.applyPattern(pattern);
             pos.setIndex(0);
-
-            String str2 = str;
-            // LANG-530 - need to make sure 'ZZ' output doesn't hit SimpleDateFormat as it will
-            // ParseException
-            if (parsePattern.endsWith("ZZ")) {
-                str2 = str.replaceAll("([-+][0-9][0-9]):([0-9][0-9])$", "$1$2");
+            String str = source;
+            // LANG-530 - need to make sure 'ZZ' output doesn't hit SimpleDateFormat as it will ParseException
+            if (pattern.endsWith("ZZ")) {
+                int signIdx = indexOfSignChars(str, 0);
+                while (signIdx != -1) {
+                    str = reformatTimezone(str, signIdx);
+                    signIdx = indexOfSignChars(str, ++signIdx);
+                }
             }
-
-            final Date date = parser.parse(str2, pos);
-            if (date != null && pos.getIndex() == str2.length()) {
+            Date date = parser.parse(str, pos);
+            if (date != null && pos.getIndex() == str.length()) {
                 return date;
             }
         }
-        throw new ParseException("Unable to parse the date: " + str, -1);
+        throw new ParseException("Unable to parse the date: " + source, -1);
+    }
+
+    // 重新格式化时区
+    private static String reformatTimezone(String str, int signIdx) {
+        String result = str;
+        if (signIdx >= 0 //
+                && signIdx + 5 < str.length() //
+                && Character.isDigit(str.charAt(signIdx + 1)) //
+                && Character.isDigit(str.charAt(signIdx + 2)) //
+                && str.charAt(signIdx + 3) == ':' //
+                && Character.isDigit(str.charAt(signIdx + 4)) //
+                && Character.isDigit(str.charAt(signIdx + 5))) {
+            result = str.substring(0, signIdx + 3) + str.substring(signIdx + 4);
+        }
+        return result;
+    }
+
+    // 获得符号字符位置
+    private static int indexOfSignChars(String str, int startPos) {
+        int idx = str.indexOf('+', startPos);
+        if (idx != -1) {
+            return idx;
+        }
+        return str.indexOf('-', startPos);
     }
 }
