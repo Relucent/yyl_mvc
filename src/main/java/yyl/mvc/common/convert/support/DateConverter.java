@@ -40,7 +40,7 @@ public class DateConverter implements Converter<Date> {
                     String msel = dateMatcher.group(1);
                     mills = Long.parseLong(msel);
                 } else {
-                    Date date = DateUtil.parse(value);
+                    Date date = DateUtil.parseDate(value);
                     if (date != null) {
                         mills = date.getTime();
                     }

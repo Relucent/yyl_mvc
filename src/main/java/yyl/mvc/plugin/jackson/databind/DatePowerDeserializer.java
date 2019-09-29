@@ -23,6 +23,6 @@ public class DatePowerDeserializer extends JsonDeserializer<Date> {
     public Date deserialize(JsonParser parser, DeserializationContext context)
             throws IOException, JsonProcessingException {
         String text = parser.getText();
-        return DateUtil.parse(text);
+        return DateUtil.parseDate(text);
     }
 }
