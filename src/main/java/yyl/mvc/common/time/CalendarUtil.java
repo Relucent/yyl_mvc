@@ -4,7 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * 日期工具类
+ * 日历工具类
  */
 public class CalendarUtil {
 
@@ -25,45 +25,73 @@ public class CalendarUtil {
      * @param unit 指定的单位类型
      * @return 指定时间指定周期的起始时间
      */
-    public static Calendar getStart(Calendar calendar, DateUnit unit) {
-        Calendar start = Calendar.getInstance();
+    public static Calendar getBegin(Calendar calendar, DateUnit unit) {
+        Calendar begin = Calendar.getInstance();
         switch (unit) {
             case YEAR: {// 年
                 int year = calendar.get(Calendar.YEAR);
-                start.set(year, Calendar.JANUARY, 1, 0, 0, 0);// _年1月0日0时0分0秒
+                begin.set(year, Calendar.JANUARY, 1, 0, 0, 0);// _年1月0日0时0分0秒
                 break;
             }
             case HALFYEAR: {// 半年
                 int halfYear = getFieldValue(calendar, DateUnit.HALFYEAR);
                 int year = calendar.get(Calendar.YEAR);
                 int month = halfYear == 0 ? Calendar.JANUARY : Calendar.JULY;// [01月|07月]
-                start.set(year, month, 1, 0, 0, 0);// 年月日时分秒
+                begin.set(year, month, 1, 0, 0, 0);// 年月日时分秒
                 break;
             }
             case QUARTER: {// 季度
                 int year = calendar.get(Calendar.YEAR);
                 int quarter = getFieldValue(calendar, DateUnit.QUARTER); // 季度
                 int month = quarter * 3;// 季度的开始月 JANUARY_01|APRIL_04|JULY_07|OCTOBER_10
-                start.set(year, month, 1, 0, 0, 0);// 年月日时分秒
+                begin.set(year, month, 1, 0, 0, 0);// 年月日时分秒
                 break;
             }
             case MONTH: {// 月份
                 int year = calendar.get(Calendar.YEAR);
                 int month = calendar.get(Calendar.MONTH);
-                start.set(year, month, 1, 0, 0, 0);// 年月日时分秒
+                begin.set(year, month, 1, 0, 0, 0);// 年月日时分秒
                 break;
             }
             case DATE: {// 日期
                 int year = calendar.get(Calendar.YEAR);
                 int month = calendar.get(Calendar.MONTH);
                 int date = calendar.get(Calendar.DATE);
-                start.set(year, month, date, 0, 0, 0);// 年月日时分秒
+                begin.set(year, month, date, 0, 0, 0);// 年月日时分秒
+                break;
+            }
+            case HOUR_OF_DAY: {// 小时(0-24)
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int date = calendar.get(Calendar.DATE);
+                int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+                begin.set(year, month, date, hourOfDay, 0, 0);// 年月日时分秒
+                break;
+            }
+            case MINUTE: {// 小时(0-24)
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int date = calendar.get(Calendar.DATE);
+                int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+                int minute = calendar.get(Calendar.MINUTE);
+                begin.set(year, month, date, hourOfDay, minute, 0);// 年月日时分秒
+                break;
+            }
+            case SECOND: {// 小时(0-24)
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int date = calendar.get(Calendar.DATE);
+                int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+                int minute = calendar.get(Calendar.MINUTE);
+                int second = calendar.get(Calendar.SECOND);
+                begin.set(year, month, date, hourOfDay, minute, second);// 年月日时分秒
                 break;
             }
             default:
                 // Ignore
         }
-        return start;
+        begin.set(Calendar.MILLISECOND, 0);// 毫秒
+        return begin;
     }
 
     /**
@@ -73,8 +101,7 @@ public class CalendarUtil {
      * @return 指定时间指定周期的結束时间
      */
     public static Calendar getEnd(Calendar calendar, DateUnit unit) {
-        Calendar end = Calendar.getInstance();// calendar.clone();
-        end.set(Calendar.MILLISECOND, 999);
+        Calendar end = Calendar.getInstance();
         switch (unit) {
             case YEAR: { // 年
                 int year = calendar.get(Calendar.YEAR);
@@ -89,7 +116,7 @@ public class CalendarUtil {
                 end.set(Calendar.MONTH, month);// 月
                 end.set(Calendar.DATE, 1);
                 int dayOfEndMonth = end.getActualMaximum(Calendar.DAY_OF_MONTH);// 该月天数
-                end.set(Calendar.DATE, dayOfEndMonth);// 设置季度结束日期的日子
+                end.set(Calendar.DATE, dayOfEndMonth);// 日
                 end.set(Calendar.HOUR_OF_DAY, 23); // 时
                 end.set(Calendar.MINUTE, 59);// 分
                 end.set(Calendar.SECOND, 59);// 秒
@@ -103,7 +130,7 @@ public class CalendarUtil {
                 end.set(Calendar.MONTH, endMonth);
                 end.set(Calendar.DATE, 1);
                 int dayOfEndMonth = end.getActualMaximum(Calendar.DAY_OF_MONTH);// 该月天数
-                end.set(Calendar.DATE, dayOfEndMonth);// 设置季度结束日期的日子
+                end.set(Calendar.DATE, dayOfEndMonth);// 日
                 end.set(Calendar.HOUR_OF_DAY, 23); // 时
                 end.set(Calendar.MINUTE, 59);// 分
                 end.set(Calendar.SECOND, 59);// 秒
@@ -116,7 +143,7 @@ public class CalendarUtil {
                 end.set(Calendar.MONTH, month);
                 end.set(Calendar.DATE, 1);
                 int dayOfEndMonth = end.getActualMaximum(Calendar.DAY_OF_MONTH);// 该月天数
-                end.set(Calendar.DATE, dayOfEndMonth);// 设置季度结束日期的日子
+                end.set(Calendar.DATE, dayOfEndMonth);// 日
                 end.set(Calendar.HOUR_OF_DAY, 23); // 时
                 end.set(Calendar.MINUTE, 59);// 分
                 end.set(Calendar.SECOND, 59);// 秒
@@ -129,9 +156,37 @@ public class CalendarUtil {
                 end.set(year, month, date, 23, 59, 59);// 年月日时分秒
                 break;
             }
+            case HOUR_OF_DAY: {// 小时(0-24)
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int date = calendar.get(Calendar.DATE);
+                int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+                end.set(year, month, date, hourOfDay, 59, 59);// 年月日时分秒
+                break;
+            }
+            case MINUTE: {// 分钟(0-24)
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int date = calendar.get(Calendar.DATE);
+                int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+                int minute = calendar.get(Calendar.MINUTE);
+                end.set(year, month, date, hourOfDay, minute, 59);// 年月日时分秒
+                break;
+            }
+            case SECOND: {// 秒钟(0-24)
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int date = calendar.get(Calendar.DATE);
+                int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+                int minute = calendar.get(Calendar.MINUTE);
+                int second = calendar.get(Calendar.SECOND);
+                end.set(year, month, date, hourOfDay, minute, second);// 年月日时分秒
+                break;
+            }
             default:
                 // Ignore
         }
+        end.set(Calendar.MILLISECOND, 999);// 毫秒
         return end;
     }
 
@@ -157,41 +212,4 @@ public class CalendarUtil {
                 return -1;
         }
     }
-
-    /* ============================================ToString============================================ */
-    public static String getString(DateUnit unit, int value) {
-        String name = null;
-        switch (unit) {
-            case YEAR: // 年
-                return value + YearStringCN;
-            case HALFYEAR:// 半年
-                return (value == 0 || value == 1) ? HalfYearArrayCN[value] : null;
-            case QUARTER:// 季度
-                return (0 <= value && value <= 11) ? QuarterStringArrayCN[value] : null;
-            case MONTH:// 月份
-                return (0 <= value && value <= 11) ? MonthStringArrayCN[value] : null;
-            case DATE:// 日期
-                return (1 <= value && value <= 31) ? DateStringArrayCN[value] : null;
-            default:
-                //
-        }
-        return name;
-    }
-
-    /* ==========================================Private_FIELD================================================= */
-    private final static String YearStringCN = "年";
-    private final static String[] HalfYearArrayCN = { //
-            "上半年", "下半年"//
-    };//
-    private final static String[] MonthStringArrayCN = { //
-            "一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月" //
-    };//
-    private final static String[] QuarterStringArrayCN = { //
-            "一季度", "二季度", "三季度", "四季度" //
-    };//
-    private final static String[] DateStringArrayCN = {null, //
-            "1日", "2日", "3日", "4日", "5日", "6日", "7日", "8日", "9日", "10日", //
-            "11日", "12日", "13日", "14日", "15日", "16日", "17日", "18日", "19日", "20日", //
-            "21日", "22日", "23日", "24日", "25日", "26日", "27日", "28日", "29日", "30日", //
-            "31日"};//
 }

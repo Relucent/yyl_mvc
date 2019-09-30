@@ -92,11 +92,11 @@ public class DateUtil {
      * @param unit 指定的单位类型
      * @return 指定时间指定周期的起始时间
      */
-    public static Date getStart(Date date, DateUnit unit) {
+    public static Date getBegin(Date date, DateUnit unit) {
         if (date == null) {
             return null;
         }
-        return CalendarUtil.getStart(CalendarUtil.toCalendar(date), unit).getTime();
+        return CalendarUtil.getBegin(CalendarUtil.toCalendar(date), unit).getTime();
     }
 
     /**
