@@ -2,6 +2,8 @@ package yyl.mvc.common.json;
 
 import yyl.mvc.common.collection.Listx;
 import yyl.mvc.common.collection.Mapx;
+import yyl.mvc.plugin.gson.GsonHandler;
+import yyl.mvc.plugin.jackson.handler.JacksonHandler;
 
 /**
  * JSON解析工具类<br>
@@ -13,10 +15,19 @@ public class JsonUtil {
 
     static {
         JsonHandler handler = null;
-        try {
-            handler = yyl.mvc.plugin.jackson.handler.JacksonHandler.INSTANCE;
-        } catch (Throwable e) {
-            /* Ignore */
+        if (handler == null) {
+            try {
+                handler = JacksonHandler.INSTANCE;
+            } catch (Throwable e) {
+                /* Ignore */
+            }
+        }
+        if (handler == null) {
+            try {
+                handler = GsonHandler.INSTANCE;
+            } catch (Throwable e) {
+                /* Ignore */
+            }
         }
         if (handler == null) {
             handler = yyl.mvc.common.json.v1.JsonHandler.INSTANCE;
