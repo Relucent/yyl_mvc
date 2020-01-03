@@ -1,5 +1,7 @@
 package yyl.mvc.common.crypto.digest;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -7,11 +9,12 @@ import java.security.NoSuchAlgorithmException;
 import java.security.Provider;
 
 import yyl.mvc.common.codec.HexUtil;
+import yyl.mvc.common.constants.IoConstants;
 import yyl.mvc.common.crypto.CryptoException;
 
 
 /**
- * 摘要算法<br>
+ * 摘要算法 (非线程安全)<br>
  */
 public class Digester {
 
@@ -199,6 +202,41 @@ public class Digester {
     }
 
     /**
+     * 生成摘要
+     * @param input {@link InputStream} 输入数据流
+     * @return 摘要字节数组
+     * @throws IOException 出现IO异常时抛出
+     */
+    public byte[] digest(InputStream input) throws IOException {
+        byte[] buffer = new byte[IoConstants.DEFAULT_BUFFER_SIZE];
+        long count = 0;
+        int n = 0;
+        // 加盐在开头
+        if (salt != null && saltPosition <= 0) {
+            messageDigest.update(salt);
+        }
+        while (IoConstants.EOF != (n = input.read(buffer))) {
+            // 加盐在中间
+            if (salt != null && count <= saltPosition && saltPosition < count + n) {
+                int len = (int) (saltPosition - count);
+                if (len != 0) {
+                    messageDigest.update(buffer, 0, len);
+                }
+                messageDigest.update(salt);
+                messageDigest.update(buffer, len, n);
+            } else {
+                messageDigest.update(buffer, 0, n);
+            }
+            count += n;
+        }
+        // 加盐在末尾
+        if (salt != null && count < saltPosition) {
+            messageDigest.update(salt);
+        }
+        return messageDigest.digest();
+    }
+
+    /**
      * 使用指定的字节数组更新摘要
      * @param input 字节数组
      */
@@ -211,14 +249,13 @@ public class Digester {
         else if (saltPosition <= 0) {
             messageDigest.update(salt);
             messageDigest.update(input);
-            return;
         }
         // 加盐在末尾
         else if (saltPosition >= input.length) {
             messageDigest.update(input);
             messageDigest.update(salt);
         }
-        // 加盐在开头
+        // 加盐在中间
         else {
             messageDigest.update(input, 0, saltPosition);
             messageDigest.update(salt);
