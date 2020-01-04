@@ -1,7 +1,7 @@
 package yyl.mvc.common.crypto.digest;
 
 /**
- * MD5算法 (非线程安全)<br>
+ * MD5算法 <br>
  */
 public class Md5 extends Digester {
 
@@ -44,9 +44,6 @@ public class Md5 extends Digester {
      * @param digestCount 摘要次数，当此值小于等于1,默认为1。
      */
     public Md5(byte[] salt, int saltPosition, int digestCount) {
-        super(DigestAlgorithm.MD5);
-        this.salt = salt;
-        this.saltPosition = saltPosition;
-        this.digestCount = digestCount;
+        super(DigestAlgorithm.MD5, salt, saltPosition, digestCount, null);
     }
 }

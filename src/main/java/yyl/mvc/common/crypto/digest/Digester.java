@@ -14,7 +14,8 @@ import yyl.mvc.common.crypto.CryptoException;
 
 
 /**
- * 摘要算法 (非线程安全)<br>
+ * 消息摘要算法 (Message-Digest Algorithm)工具类<br>
+ * 此类为应用程序提供信息摘要算法的功能，如 MD5或 SHA算法。<br>
  */
 public class Digester {
 
@@ -22,11 +23,11 @@ public class Digester {
     /** 摘要算法的功能类 */
     protected final MessageDigest messageDigest;
     /** 盐值 */
-    protected byte[] salt = null;
+    protected final byte[] salt;
     /** 加盐位置，默认0 */
-    protected int saltPosition = 0;
+    protected final int saltPosition;
     /** 散列次数 */
-    protected int digestCount = 0;
+    protected final int digestCount;
 
     // =================================Constructors===========================================
     /**
@@ -42,7 +43,7 @@ public class Digester {
      * @param algorithm 算法
      */
     protected Digester(String algorithm) {
-        this(algorithm, null);
+        this(algorithm, null, 0, 0, null);
     }
 
     /**
@@ -51,15 +52,40 @@ public class Digester {
      * @param provider 算法提供者，null表示JDK默认，可以引入第三方包(例如BouncyCastle)提供更多算法支持
      */
     public Digester(DigestAlgorithm algorithm, Provider provider) {
-        this(algorithm.getValue(), provider);
+        this(algorithm.getValue(), null, 0, 0, provider);
     }
 
     /**
      * 构造函数
      * @param algorithm 算法
+     * @param salt 盐值 (默认加盐位置在头部)
+     * @param digestCount 摘要次数，当此值小于等于1,默认为1。
+     */
+    public Digester(DigestAlgorithm algorithm, byte[] salt) {
+        this(algorithm.getValue(), salt, 0, 1, null);
+    }
+
+    /**
+     * 构造函数
+     * @param algorithm 算法
+     * @param salt 盐值
+     * @param saltPosition 加盐位置，既将盐值字符串放置在数据的index数，默认0
+     * @param digestCount 摘要次数，当此值小于等于1,默认为1。
      * @param provider 算法提供者，null表示JDK默认，可以引入第三方包(例如BouncyCastle)提供更多算法支持
      */
-    protected Digester(String algorithm, Provider provider) {
+    protected Digester(DigestAlgorithm algorithm, byte[] salt, int saltPosition, int digestCount, Provider provider) {
+        this(algorithm.getValue(), salt, saltPosition, digestCount, provider);
+    }
+
+    /**
+     * 构造函数
+     * @param algorithm 算法
+     * @param salt 盐值
+     * @param saltPosition 加盐位置，既将盐值字符串放置在数据的index数，默认0
+     * @param digestCount 摘要次数，当此值小于等于1,默认为1。
+     * @param provider 算法提供者，null表示JDK默认，可以引入第三方包(例如BouncyCastle)提供更多算法支持
+     */
+    protected Digester(String algorithm, byte[] salt, int saltPosition, int digestCount, Provider provider) {
         try {
             if (null == provider) {
                 messageDigest = MessageDigest.getInstance(algorithm);
@@ -69,39 +95,12 @@ public class Digester {
         } catch (NoSuchAlgorithmException e) {
             throw new CryptoException(e);
         }
+        this.salt = salt;
+        this.saltPosition = saltPosition;
+        this.digestCount = digestCount;
     }
 
     // =================================Methods================================================
-    /**
-     * 设置加盐内容
-     * @param salt 盐值
-     * @return this
-     */
-    public Digester setSalt(byte[] salt) {
-        this.salt = salt;
-        return this;
-    }
-
-    /**
-     * 设置加盐的位置<br>
-     * @param saltPosition 加盐位置
-     * @return this
-     */
-    public Digester setSaltPosition(int saltPosition) {
-        this.saltPosition = saltPosition;
-        return this;
-    }
-
-    /**
-     * 设置重复计算摘要值次数
-     * @param digestCount 摘要值次数
-     * @return this
-     */
-    public Digester setDigestCount(int digestCount) {
-        this.digestCount = digestCount;
-        return this;
-    }
-
     /**
      * 获得 {@link MessageDigest}
      * @return {@link MessageDigest}
@@ -287,6 +286,65 @@ public class Digester {
             return messageDigest.digest();
         } finally {
             messageDigest.reset();
+        }
+    }
+
+    // =================================Builder================================================
+    public static class Builder {
+
+        /** 摘要算法类型 */
+        protected DigestAlgorithm algorithm;
+        /** 盐值 */
+        protected byte[] salt;
+        /** 加盐位置，默认0 */
+        protected int saltPosition;
+        /** 散列次数 */
+        protected int digestCount;
+        /** 算法提供者，null表示JDK默认 */
+        protected Provider provider;
+
+        /**
+         * 设置加盐内容
+         * @param salt 盐值
+         * @return this
+         */
+        public void setSalt(byte[] salt) {
+            this.salt = salt;
+        }
+
+        /**
+         * 设置加盐的位置，只有盐值存在时有效<br>
+         * @param saltPosition 盐的位置
+         * @return this
+         */
+        public void setSaltPosition(int saltPosition) {
+            this.saltPosition = saltPosition;
+        }
+
+        /**
+         * 设置重复计算摘要值次数
+         * @param digestCount 摘要值次数
+         * @return this
+         */
+        public void setDigestCount(int digestCount) {
+            this.digestCount = digestCount;
+        }
+
+        /**
+         * 设置算法提供者
+         * @param provider 算法提供者，null表示JDK默认，可以引入Bouncy Castle等来提供更多算法支持
+         * @return this
+         */
+        public void setProvider(Provider provider) {
+            this.provider = provider;
+        }
+
+        /**
+         * 构建消息摘要算法对象
+         * @return 消息摘要算法对象实例
+         */
+        public Digester build() {
+            return new Digester(algorithm, salt, saltPosition, digestCount, provider);
         }
     }
 }
