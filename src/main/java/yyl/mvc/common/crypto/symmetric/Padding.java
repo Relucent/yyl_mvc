@@ -1,4 +1,4 @@
-package yyl.mvc.common.crypto.enums;
+package yyl.mvc.common.crypto.symmetric;
 
 /**
  * 填充方式 <br>

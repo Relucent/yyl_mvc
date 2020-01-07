@@ -3,9 +3,6 @@ package yyl.mvc.common.crypto.symmetric;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
-import yyl.mvc.common.crypto.enums.Mode;
-import yyl.mvc.common.crypto.enums.Padding;
-
 /**
  * Data Encryption Standard(数据加密标准)算法实现<br>
  * Java中的默认模式是：DES/CBC/PKCS5Padding<br>

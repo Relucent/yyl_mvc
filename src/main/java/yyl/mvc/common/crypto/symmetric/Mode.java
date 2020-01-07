@@ -1,4 +1,4 @@
-package yyl.mvc.common.crypto.enums;
+package yyl.mvc.common.crypto.symmetric;
 
 /**
  * 密码算法模式

@@ -3,9 +3,6 @@ package yyl.mvc.common.crypto.symmetric;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
-import yyl.mvc.common.crypto.enums.Mode;
-import yyl.mvc.common.crypto.enums.Padding;
-
 /**
  * Advanced Encryption Standard（高级加密标准）加密算法实现<br>
  * Java中AES的默认模式是：AES/ECB/PKCS5Padding<br>
