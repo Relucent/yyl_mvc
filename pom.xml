@@ -38,6 +38,7 @@
 		<p6spy.version>2.1.4</p6spy.version>
 		<shiro-all.version>1.2.3</shiro-all.version>
 		<poi.version>3.14</poi.version>
+		<bouncycastle.version>1.64</bouncycastle.version>
 		<pinyin4j.version>2.5.0</pinyin4j.version>
 		<guava.version>14.0.1</guava.version>
 		<quartz.version>2.2.3</quartz.version>
@@ -242,6 +243,14 @@
 			<groupId>com.belerweb</groupId>
 			<artifactId>pinyin4j</artifactId>
 			<version>${pinyin4j.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15on</artifactId>
+			<version>${bouncycastle.version}</version>
+			<scope>compile</scope>
+			<optional>true</optional>
 		</dependency>
 
 		<dependency>

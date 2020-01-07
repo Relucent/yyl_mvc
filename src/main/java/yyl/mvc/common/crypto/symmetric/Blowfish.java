@@ -12,7 +12,7 @@
  * Released under the Apache 2.0 license.
  */
 
-package yyl.mvc.common.crypto;
+package yyl.mvc.common.crypto.symmetric;
 
 import java.security.MessageDigest;
 import java.util.Random;

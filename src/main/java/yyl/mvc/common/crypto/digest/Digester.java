@@ -8,7 +8,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Provider;
 
-import yyl.mvc.common.codec.HexUtil;
+import yyl.mvc.common.codec.Hex;
 import yyl.mvc.common.constants.IoConstants;
 import yyl.mvc.common.crypto.CryptoException;
 
@@ -16,18 +16,19 @@ import yyl.mvc.common.crypto.CryptoException;
 /**
  * 消息摘要算法 (Message-Digest Algorithm)工具类<br>
  * 此类为应用程序提供信息摘要算法的功能，如 MD5或 SHA算法。<br>
+ * 注意：该类的实例不保证线程安全，应当避免多线程同时调用同一个实例(每个线程使用独立的实例，或者在调用时候增加同步锁)。<br>
  */
 public class Digester {
 
     // =================================Fields================================================
-    /** 摘要算法的功能类 */
-    protected final MessageDigest messageDigest;
+    /** 摘要算法的功能类(该对象非线程安全) */
+    protected MessageDigest messageDigest;
     /** 盐值 */
-    protected final byte[] salt;
+    protected byte[] salt;
     /** 加盐位置，默认0 */
-    protected final int saltPosition;
+    protected int saltPosition;
     /** 散列次数 */
-    protected final int digestCount;
+    protected int digestCount;
 
     // =================================Constructors===========================================
     /**
@@ -35,15 +36,7 @@ public class Digester {
      * @param algorithm 算法
      */
     public Digester(DigestAlgorithm algorithm) {
-        this(algorithm.getValue());
-    }
-
-    /**
-     * 构造函数
-     * @param algorithm 算法
-     */
-    protected Digester(String algorithm) {
-        this(algorithm, null, 0, 0, null);
+        this(algorithm.getValue(), null, 0, 0, null);
     }
 
     /**
@@ -183,7 +176,7 @@ public class Digester {
      */
     public String digestHex(byte[] input) {
         byte[] hash = digest(input);
-        return HexUtil.encodeHexString(hash);
+        return Hex.encodeHexString(hash);
     }
 
     /**
@@ -289,62 +282,31 @@ public class Digester {
         }
     }
 
-    // =================================Builder================================================
-    public static class Builder {
+    // =================================SetMethods=============================================
+    /**
+     * 设置加盐内容
+     * @param salt 盐值
+     * @return this
+     */
+    public void setSalt(byte[] salt) {
+        this.salt = salt;
+    }
 
-        /** 摘要算法类型 */
-        protected DigestAlgorithm algorithm;
-        /** 盐值 */
-        protected byte[] salt;
-        /** 加盐位置，默认0 */
-        protected int saltPosition;
-        /** 散列次数 */
-        protected int digestCount;
-        /** 算法提供者，null表示JDK默认 */
-        protected Provider provider;
+    /**
+     * 设置加盐的位置，只有盐值存在时有效<br>
+     * @param saltPosition 盐的位置
+     * @return this
+     */
+    public void setSaltPosition(int saltPosition) {
+        this.saltPosition = saltPosition;
+    }
 
-        /**
-         * 设置加盐内容
-         * @param salt 盐值
-         * @return this
-         */
-        public void setSalt(byte[] salt) {
-            this.salt = salt;
-        }
-
-        /**
-         * 设置加盐的位置，只有盐值存在时有效<br>
-         * @param saltPosition 盐的位置
-         * @return this
-         */
-        public void setSaltPosition(int saltPosition) {
-            this.saltPosition = saltPosition;
-        }
-
-        /**
-         * 设置重复计算摘要值次数
-         * @param digestCount 摘要值次数
-         * @return this
-         */
-        public void setDigestCount(int digestCount) {
-            this.digestCount = digestCount;
-        }
-
-        /**
-         * 设置算法提供者
-         * @param provider 算法提供者，null表示JDK默认，可以引入Bouncy Castle等来提供更多算法支持
-         * @return this
-         */
-        public void setProvider(Provider provider) {
-            this.provider = provider;
-        }
-
-        /**
-         * 构建消息摘要算法对象
-         * @return 消息摘要算法对象实例
-         */
-        public Digester build() {
-            return new Digester(algorithm, salt, saltPosition, digestCount, provider);
-        }
+    /**
+     * 设置重复计算摘要值次数
+     * @param digestCount 摘要值次数
+     * @return this
+     */
+    public void setDigestCount(int digestCount) {
+        this.digestCount = digestCount;
     }
 }

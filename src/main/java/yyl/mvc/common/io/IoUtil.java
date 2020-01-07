@@ -10,6 +10,8 @@ import java.net.HttpURLConnection;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
 
+import org.apache.commons.io.output.ByteArrayOutputStream;
+
 import yyl.mvc.common.constants.IoConstants;
 
 /**
@@ -177,5 +179,18 @@ public class IoUtil {
                 // ignore
             }
         }
+    }
+
+    /**
+     * 获得输入流数据。<br>
+     * 该方法不会{@code close}数据流。<br>
+     * @param input 流数据
+     * @return 流数据的字节数组
+     * @throws IOException 出现IO异常
+     */
+    public static byte[] toByteArray(InputStream input) throws IOException {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        copy(input, output);
+        return output.toByteArray();
     }
 }

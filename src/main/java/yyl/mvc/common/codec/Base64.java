@@ -12,7 +12,7 @@ public class Base64 {
      * @param data 字节数组
      * @return Base64字符串
      */
-    public static String encodeBase64(byte[] data) {
+    public static String encode(byte[] data) {
         return javax.xml.bind.DatatypeConverter.printBase64Binary(data);
     }
 
@@ -21,7 +21,7 @@ public class Base64 {
      * @param base64 Base64字符串
      * @return 字节数组
      */
-    public static byte[] decodeBase64(String base64) {
+    public static byte[] decode(String base64) {
         return javax.xml.bind.DatatypeConverter.parseBase64Binary(base64);
     }
 }
