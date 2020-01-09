@@ -12,7 +12,6 @@ import yyl.mvc.common.codec.Hex;
 import yyl.mvc.common.constants.IoConstants;
 import yyl.mvc.common.crypto.CryptoException;
 
-
 /**
  * 消息摘要算法 (Message-Digest Algorithm)工具类<br>
  * 此类为应用程序提供信息摘要算法的功能，如 MD5或 SHA算法。<br>
@@ -52,7 +51,6 @@ public class Digester {
      * 构造函数
      * @param algorithm 算法
      * @param salt 盐值 (默认加盐位置在头部)
-     * @param digestCount 摘要次数，当此值小于等于1,默认为1。
      */
     public Digester(DigestAlgorithm algorithm, byte[] salt) {
         this(algorithm.getValue(), salt, 0, 1, null);
@@ -288,8 +286,9 @@ public class Digester {
      * @param salt 盐值
      * @return this
      */
-    public void setSalt(byte[] salt) {
+    public Digester setSalt(byte[] salt) {
         this.salt = salt;
+        return this;
     }
 
     /**
@@ -297,8 +296,9 @@ public class Digester {
      * @param saltPosition 盐的位置
      * @return this
      */
-    public void setSaltPosition(int saltPosition) {
+    public Digester setSaltPosition(int saltPosition) {
         this.saltPosition = saltPosition;
+        return this;
     }
 
     /**
@@ -306,7 +306,8 @@ public class Digester {
      * @param digestCount 摘要值次数
      * @return this
      */
-    public void setDigestCount(int digestCount) {
+    public Digester setDigestCount(int digestCount) {
         this.digestCount = digestCount;
+        return this;
     }
 }
