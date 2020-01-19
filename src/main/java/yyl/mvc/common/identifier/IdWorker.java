@@ -1,13 +1,17 @@
 package yyl.mvc.common.identifier;
 
+import java.lang.management.ManagementFactory;
+
+import yyl.mvc.common.net.NetworkUtil;
+
+
 /**
  * Twitter_Snowflake<br>
  * SnowFlake的结构如下(每部分用-分开):<br>
  * 0 - 0000000000 0000000000 0000000000 0000000000 0 - 00000 - 00000 - 000000000000 <br>
  * 1位标识，由于long基本类型在Java中是带符号的，最高位是符号位，正数是0，负数是1，所以id一般是正数，最高位是0<br>
  * 41位时间截(毫秒级)，注意，41位时间截不是存储当前时间的时间截，而是存储时间截的差值（当前时间截 - 开始时间截)
- * 得到的值），这里的的开始时间截，一般是我们的id生成器开始使用的时间，由我们程序来指定的（如下下面程序IdWorker类的startTime属性）。41位的时间截，可以使用69年，年T =
- * (1L << 41) / (1000L * 60 * 60 * 24 * 365) = 69<br>
+ * 得到的值），这里的的开始时间截，一般是我们的id生成器开始使用的时间，由我们程序来指定的（如下下面程序IdWorker类的startTime属性）。41位的时间截，可以使用69年，年T = (1L << 41) / (1000L * 60 * 60 * 24 * 365) = 69<br>
  * 10位的数据机器位，可以部署在1024个节点，包括5位datacenterId和5位workerId<br>
  * 12位序列，毫秒内的计数，12位的计数顺序号支持每个节点每毫秒(同一机器，同一时间截)产生4096个ID序号<br>
  * 加起来刚好64位，为一个Long型。<br>
@@ -63,17 +67,23 @@ public class IdWorker {
     // ==============================Constructors=====================================
     /**
      * 构造函数
+     */
+    public IdWorker() {
+        this.datacenterId = getDatacenterId(maxDatacenterId);
+        this.workerId = getMaxWorkerId(datacenterId, maxWorkerId);
+    }
+
+    /**
+     * 构造函数
      * @param workerId 工作ID (0~31)
      * @param datacenterId 数据中心ID (0~31)
      */
     public IdWorker(long workerId, long datacenterId) {
         if (workerId > maxWorkerId || workerId < 0) {
-            throw new IllegalArgumentException(
-                    String.format("worker Id can't be greater than %d or less than 0", maxWorkerId));
+            throw new IllegalArgumentException(String.format("worker Id can't be greater than %d or less than 0", maxWorkerId));
         }
         if (datacenterId > maxDatacenterId || datacenterId < 0) {
-            throw new IllegalArgumentException(
-                    String.format("datacenter Id can't be greater than %d or less than 0", maxDatacenterId));
+            throw new IllegalArgumentException(String.format("datacenter Id can't be greater than %d or less than 0", maxDatacenterId));
         }
         this.workerId = workerId;
         this.datacenterId = datacenterId;
@@ -89,8 +99,8 @@ public class IdWorker {
 
         // 如果当前时间小于上一次ID生成的时间戳，说明系统时钟回退过这个时候应当抛出异常
         if (timestamp < lastTimestamp) {
-            throw new RuntimeException(String.format(
-                    "Clock moved backwards.  Refusing to generate id for %d milliseconds", lastTimestamp - timestamp));
+            throw new RuntimeException(
+                    String.format("Clock moved backwards.  Refusing to generate id for %d milliseconds", lastTimestamp - timestamp));
         }
 
         // 如果是同一时间生成的，则进行毫秒内序列
@@ -136,5 +146,42 @@ public class IdWorker {
      */
     protected long timeGen() {
         return System.currentTimeMillis();
+    }
+
+    /**
+     * 根据机器MAC地址，生成数据中心ID标识
+     * @param maxDatacenterId 最大支持的数据中心ID
+     * @return 数据中心ID
+     */
+    protected static long getDatacenterId(long maxDatacenterId) {
+        long id = 0L;
+        try {
+            byte[] mac = NetworkUtil.getHardwareAddress();
+            if (mac != null && mac.length != 0) {
+                id = (((0x000000FF & (long) mac[mac.length - 1])//
+                        | (0x0000FF00 & (((long) mac[mac.length - 2]) << 8)) //
+                ) >> 6) % (maxDatacenterId + 1);
+            }
+        } catch (Exception e) {
+
+        }
+        return id;
+    }
+
+    /**
+     * 根据进程编号，生成工作ID标识
+     * @param datacenterId 数据中心ID
+     * @param maxWorkerId 最大工作ID
+     * @return 工作ID
+     */
+    protected static long getMaxWorkerId(long datacenterId, long maxWorkerId) {
+        StringBuilder mpid = new StringBuilder();
+        mpid.append(datacenterId);
+        String name = ManagementFactory.getRuntimeMXBean().getName();
+        if (name != null) {
+            mpid.append(name.split("@")[0]);// jvmPid
+        }
+        // MAC+PID 的 HASHCODE 取16个低位
+        return (mpid.toString().hashCode() & 0xffff) % (maxWorkerId + 1);
     }
 }
