@@ -41,7 +41,7 @@
 		<bouncycastle.version>1.64</bouncycastle.version>
 		<pinyin4j.version>2.5.0</pinyin4j.version>
 		<guava.version>14.0.1</guava.version>
-		<quartz.version>2.2.3</quartz.version>
+		<quartz.version>2.3.2</quartz.version>
 		<zookeeper.version>3.4.9</zookeeper.version>
 		<curator.version>2.11.1</curator.version>
 		<servlet.version>3.0.1</servlet.version>
