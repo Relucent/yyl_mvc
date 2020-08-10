@@ -13,10 +13,9 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.collect.Maps;
+
+import yyl.mvc.common.logging.Logger;
 
 /**
  * 代理_Servlet过滤器<br>
@@ -25,7 +24,7 @@ import com.google.common.collect.Maps;
  * @see javax.servlet.Filter
  */
 public class ProxyServletFilter extends ProxyFilter {
-	protected final Logger logger = LoggerFactory.getLogger(getClass());
+	protected final Logger logger = Logger.getLogger(getClass());
 	@SuppressWarnings("unchecked")
 	private Map<UrlPatternMatcher, ProxyServlet> servletMap = Collections.EMPTY_MAP;
 
@@ -35,8 +34,7 @@ public class ProxyServletFilter extends ProxyFilter {
 	 * @param response 应答
 	 * @param filterChain 过滤器链
 	 */
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException,
-			ServletException {
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
 		String contextPath = req.getContextPath();

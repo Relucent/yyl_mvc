@@ -10,11 +10,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import yyl.mvc.common.collection.Mapx;
 import yyl.mvc.common.json.JsonUtil;
+import yyl.mvc.common.logging.Logger;
 
 /**
  * 控制器工具类(主要用于支持AJAX)<br>
@@ -24,7 +23,7 @@ public class ControllerUtil {
 
 	// ===================================Fields==============================================
 	/** 记录日志的对象. */
-	private static Logger logger = LoggerFactory.getLogger(ControllerUtil.class);
+	private static final Logger LOGGER = Logger.getLogger(ControllerUtil.class);
 
 	// ===================================Methods=============================================
 	/**
@@ -39,8 +38,8 @@ public class ControllerUtil {
 			String value = request.getParameter(name);
 			params.put(name, value);
 		}
-		if (logger.isDebugEnabled()) {
-			logger.debug("params:" + params);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("params:" + params);
 		}
 		return params;
 	}
@@ -77,20 +76,20 @@ public class ControllerUtil {
 			response.setHeader("Pragma", "no-cache");
 			response.setHeader("Cache-Control", "no-cache");
 			response.setDateHeader("Expires", 0);
-			//response.setContentType("text/html; charset=UTF-8");
+			// response.setContentType("text/html; charset=UTF-8");
 			response.setContentType("application/json; charset=UTF-8");
 			response.setCharacterEncoding("UTF-8");
 			response.addHeader("Access-Control-Allow-Origin", "*");
-			if (logger.isDebugEnabled()) {
-				logger.debug("json:" + json);
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("json:" + json);
 			}
 			try {
 				response.getWriter().print(json);
 			} catch (IOException e) {
-				logger.debug("!", e);
+				LOGGER.debug("!", e);
 			}
 		} catch (Exception e) {
-			logger.error(e.toString(), e);
+			LOGGER.error(e.toString(), e);
 		}
 	}
 
@@ -110,8 +109,8 @@ public class ControllerUtil {
 				src = wrapException((Throwable) src);
 			}
 			String json = JsonUtil.encode(src);
-			if (logger.isDebugEnabled()) {
-				logger.debug("callback:" + callback + " json:" + json);
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("callback:" + callback + " json:" + json);
 			}
 			response.setHeader("Pragma", "no-cache"); // HTTP/1.0
 			response.setHeader("Cache-Control", "no-cache");
@@ -124,7 +123,7 @@ public class ControllerUtil {
 			writer.append(json);
 			writer.append(")");
 		} catch (Exception e) {
-			logger.error(e.toString(), e);
+			LOGGER.error(e.toString(), e);
 		}
 	}
 

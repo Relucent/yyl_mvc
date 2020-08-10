@@ -12,8 +12,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import yyl.mvc.common.logging.Logger;
 
 /**
  * _Servlet代理，可以通过该代理，使用Spring托管_Servlet<br>
@@ -24,7 +23,7 @@ import org.slf4j.LoggerFactory;
 public class ProxyServlet implements Servlet {
 	// ===================================Fields==============================================
 	/** 记录日志的对象. */
-	protected final Logger logger = LoggerFactory.getLogger(getClass());
+	protected final Logger logger = Logger.getLogger(getClass());
 	private final String name;
 	private final Servlet servlet;
 	private final Map<String, String> initParams;
@@ -40,7 +39,7 @@ public class ProxyServlet implements Servlet {
 	}
 
 	public ProxyServlet(String name, Servlet servlet, boolean enable) {
-		this(name, servlet, Collections.<String, String> emptyMap(), enable);
+		this(name, servlet, Collections.<String, String>emptyMap(), enable);
 	}
 
 	public ProxyServlet(String name, Servlet servlet, Map<String, String> initParams, boolean enable) {

@@ -7,8 +7,6 @@ import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -18,11 +16,12 @@ import org.springframework.core.io.support.PropertiesLoaderSupport;
 
 import com.google.common.collect.Lists;
 
-public class ApplicationPropertiesFactoryBean extends PropertiesLoaderSupport implements FactoryBean<Properties>,
-		InitializingBean {
+import yyl.mvc.common.logging.Logger;
+
+public class ApplicationPropertiesFactoryBean extends PropertiesLoaderSupport implements FactoryBean<Properties>, InitializingBean {
 
 	// ==============================Fields===========================================
-	private static Logger logger = LoggerFactory.getLogger(ApplicationPropertiesFactoryBean.class);
+	private static Logger logger = Logger.getLogger(ApplicationPropertiesFactoryBean.class);
 	private ResourceLoader resourceLoader = new DefaultResourceLoader();
 	private String propertiesListLocation = "classpath:/properties.lst";
 	private Properties properties;

@@ -1,8 +1,6 @@
 package yyl.mvc.plugin.jackson;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -13,6 +11,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import yyl.mvc.common.collection.Listx;
 import yyl.mvc.common.collection.Mapx;
+import yyl.mvc.common.logging.Logger;
 import yyl.mvc.plugin.jackson.databind.TreeNodeConverts;
 
 /**
@@ -22,11 +21,11 @@ import yyl.mvc.plugin.jackson.databind.TreeNodeConverts;
  */
 public class JacksonUtil {
 
-	//===================================Fields==============================================
+	// ===================================Fields==============================================
 	public static final ObjectMapper MAPPER = MyObjectMapper.INSTANCE;
-	private static final Logger LOGGER = LoggerFactory.getLogger(JacksonUtil.class);
+	private static final Logger LOGGER = Logger.getLogger(JacksonUtil.class);
 
-	//===================================Methods=============================================
+	// ===================================Methods=============================================
 	/**
 	 * 将JAVA对象编码为JSON字符串
 	 * @param src JAVA对象

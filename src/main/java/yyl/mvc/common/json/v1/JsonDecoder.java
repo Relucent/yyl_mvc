@@ -2,11 +2,9 @@ package yyl.mvc.common.json.v1;
 
 import java.io.StringReader;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import yyl.mvc.common.collection.Listx;
 import yyl.mvc.common.collection.Mapx;
+import yyl.mvc.common.logging.Logger;
 
 /**
  * JSON编码工具类，将JAVA对象编码为JSON字符串。
@@ -15,7 +13,7 @@ import yyl.mvc.common.collection.Mapx;
  */
 public class JsonDecoder {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = Logger.getLogger(getClass());
 
     /**
      * 将Java对象解析为JAVA对象
