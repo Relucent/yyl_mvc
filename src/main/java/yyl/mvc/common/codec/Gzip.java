@@ -9,8 +9,6 @@ import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.io.IOUtils;
 
-import com.google.common.base.Throwables;
-
 public class Gzip {
 
 	public static byte[] zip(byte[] data) {
@@ -22,7 +20,7 @@ public class Gzip {
 					stream = new GZIPOutputStream(output = new ByteArrayOutputStream()));
 			stream.finish();
 		} catch (IOException e) {
-			throw Throwables.propagate(e);
+			throw new RuntimeException(e);
 		} finally {
 			IOUtils.closeQuietly(input);
 			IOUtils.closeQuietly(stream);
@@ -38,7 +36,7 @@ public class Gzip {
 			IOUtils.copy(input = new GZIPInputStream(new ByteArrayInputStream(data)), //
 					output = new ByteArrayOutputStream());
 		} catch (IOException e) {
-			throw Throwables.propagate(e);
+			throw new RuntimeException(e);
 		} finally {
 			IOUtils.closeQuietly(input);
 			IOUtils.closeQuietly(output);
