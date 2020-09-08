@@ -40,6 +40,7 @@
 		<pinyin4j.version>2.5.0</pinyin4j.version>
 		<poi.version>3.14</poi.version>
 		<quartz.version>2.3.2</quartz.version>
+		<rhino.version>1.7.12</rhino.version>
 		<shiro-all.version>1.2.3</shiro-all.version>
 		<slf4j-log4j12.version>1.7.20</slf4j-log4j12.version>
 		<spring.version>4.3.7.RELEASE</spring.version>
@@ -217,6 +218,12 @@
 		<!--[ <artifactId>p6spy</artifactId>] -->
 		<!--[ <version>${p6spy.version}</version>] -->
 		<!--[</dependency>] -->
+
+		<dependency>
+			<groupId>org.mozilla</groupId>
+			<artifactId>rhino</artifactId>
+			<version>${rhino.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.apache.shiro</groupId>
